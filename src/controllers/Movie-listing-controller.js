@@ -41,7 +41,7 @@ async function updateMovieListing(req, res) {
         .status(403)
         .json({ message: "You are not authorized", success: false });
 
-    object.assign(movie, req.body);
+    Object.assign(movie, req.body);
     await movie.save();
 
     res.json({ message: "Movie Updated", success: true });
