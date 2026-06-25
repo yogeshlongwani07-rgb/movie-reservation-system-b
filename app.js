@@ -5,7 +5,7 @@ if (!process.env.SECRET_JWT) {
 }
 const express = require("express");
 const app = express();
-const port = 3000;
+const port = process.env.PORT || 3000;
 const connectToDb = require("./src/DB/connect");
 const adminRoutes = require("./src/routes/admin");
 const cookieParser = require("cookie-parser");
