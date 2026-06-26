@@ -66,17 +66,17 @@ The application uses **JWT Authentication**, **Role-Based Authorization**, **Mon
 
 # 🛠 Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| Node.js | Runtime Environment |
-| Express.js | Backend Framework |
-| MongoDB | Database |
-| Mongoose | ODM |
-| JWT | Authentication |
-| bcrypt | Password Encryption |
-| Validator | Input Validation |
-| Cookie Parser | Cookie Handling |
-| dotenv | Environment Variables |
+| Technology    | Purpose               |
+| ------------- | --------------------- |
+| Node.js       | Runtime Environment   |
+| Express.js    | Backend Framework     |
+| MongoDB       | Database              |
+| Mongoose      | ODM                   |
+| JWT           | Authentication        |
+| bcrypt        | Password Encryption   |
+| Validator     | Input Validation      |
+| Cookie Parser | Cookie Handling       |
+| dotenv        | Environment Variables |
 
 ---
 
@@ -160,40 +160,40 @@ Server Running
 
 ## Admin Routes
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/admin/register` | Register Admin |
-| POST | `/admin/login` | Login Admin |
-| POST | `/admin/logout` | Logout Admin |
-| DELETE | `/admin/delete` | Delete Admin |
-| GET | `/admin/listed-movies` | View Admin Movies |
+| Method | Endpoint               | Description       |
+| ------ | ---------------------- | ----------------- |
+| POST   | `/admin/register`      | Register Admin    |
+| POST   | `/admin/login`         | Login Admin       |
+| POST   | `/admin/logout`        | Logout Admin      |
+| DELETE | `/admin/delete`        | Delete Admin      |
+| GET    | `/admin/listed-movies` | View Admin Movies |
 
 ---
 
 ## Movie Routes
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| GET | `/movie/` | Get All Movies |
-| POST | `/movie/add` | Add Movie |
-| PUT | `/movie/edit/:id` | Update Movie |
-| DELETE | `/movie/delete/:id` | Delete Movie |
-| GET | `/movie/shows?date=YYYY-MM-DD` | Available Shows |
-| POST | `/movie/bookings` | Book Tickets |
-| GET | `/movie/owner/:id` | Movie Owner Details |
+| Method | Endpoint                       | Description         |
+| ------ | ------------------------------ | ------------------- |
+| GET    | `/movie/`                      | Get All Movies      |
+| POST   | `/movie/add`                   | Add Movie           |
+| PUT    | `/movie/edit/:id`              | Update Movie        |
+| DELETE | `/movie/delete/:id`            | Delete Movie        |
+| GET    | `/movie/shows?date=YYYY-MM-DD` | Available Shows     |
+| POST   | `/movie/bookings`              | Book Tickets        |
+| GET    | `/movie/owner/:id`             | Movie Owner Details |
 
 ---
 
 ## User Routes
 
-| Method | Endpoint | Description |
-|---------|----------|-------------|
-| POST | `/user/register` | Register User |
-| POST | `/user/login` | Login User |
-| POST | `/user/logout` | Logout User |
-| DELETE | `/user/delete` | Delete User |
-| GET | `/user/my-bookings` | View Bookings |
-| POST | `/user/cancel-booking/:bookingId` | Cancel Booking |
+| Method | Endpoint                          | Description    |
+| ------ | --------------------------------- | -------------- |
+| POST   | `/user/register`                  | Register User  |
+| POST   | `/user/login`                     | Login User     |
+| POST   | `/user/logout`                    | Logout User    |
+| DELETE | `/user/delete`                    | Delete User    |
+| GET    | `/user/my-bookings`               | View Bookings  |
+| POST   | `/user/cancel-booking/:bookingId` | Cancel Booking |
 
 ---
 
@@ -276,21 +276,15 @@ View Listed Movies
 # 📈 Future Improvements
 
 - Payment Gateway Integration
-- Seat Selection UI
 - Email Notifications
 - Booking QR Codes
 - Movie Posters Upload
 - Search & Filter Movies
 - Pagination
-- Swagger API Documentation
 - Docker Support
 - Unit Testing
 - CI/CD Pipeline
-- React Frontend
-- Admin Dashboard
 - Real-time Seat Updates (Socket.IO)
-- Booking History
-- Role-Based Access Control Enhancements
 
 ---
 
