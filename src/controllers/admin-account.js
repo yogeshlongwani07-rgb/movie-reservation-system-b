@@ -6,12 +6,19 @@ var jwt = require("jsonwebtoken");
 
 async function registerAdmin(req, res) {
   try {
-    const { name, password, email, role } = req.body;
+    const { name, password, email, role, passkey } = req.body;
     if (!role)
       return res.status(403).json({
         success: false,
         message: "Unauthorized. Only administrators can create admin accounts.",
       });
+
+    if (!passkey || passkey !== process.env.PASSKEY) {
+      return res.status(403).json({
+        success: false,
+        message: "Unauthorized. Invalid passkey.",
+      });
+    }
 
     if (!name || !password || !email)
       return res
