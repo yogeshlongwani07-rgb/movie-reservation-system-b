@@ -158,7 +158,7 @@ async function checkMyBookings(req, res) {
 
 async function cancelBooking(req, res) {
   try {
-    const bookingId = req.params.bookingId;
+    const {bookingId} = req.params;
     const user = await User.findById(req.user._id);
     if (!user) {
       return res.status(404).json({
@@ -188,7 +188,11 @@ async function cancelBooking(req, res) {
       const show = movie.shows.id(user.bookings[bookingIndex].showId);
       if (show) {
         show.availableSeats += user.bookings[bookingIndex].seats;
+      }else{
+        return res.status(404).json({message : "Show not found", success : false })
       }
+    }else{
+      return res.status(404).json({message : "Movie not found", success : false })
     }
     await movie.save();
     await user.save();
