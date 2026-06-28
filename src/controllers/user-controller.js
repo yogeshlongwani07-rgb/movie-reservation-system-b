@@ -1,8 +1,8 @@
-const { User } = require("../models/user-admin");
+const User = require("../models/user");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 var jwt = require("jsonwebtoken");
-const Movie = require("../models/movie-listing");
+const Movie = require("../models/movie");
 
 async function registerUser(req, res) {
   try {
@@ -167,7 +167,7 @@ async function cancelBooking(req, res) {
       });
     }
     const bookingIndex = user.bookings.findIndex(
-      (booking) => booking._id.toString() === bookingId,
+      (booking) => booking.showId.toString() === bookingId,
     );
     if (bookingIndex === -1) {
       return res.status(404).json({

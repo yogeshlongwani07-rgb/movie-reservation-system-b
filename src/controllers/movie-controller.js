@@ -1,5 +1,6 @@
-const Movie = require("../models/movie-listing");
-const { Admin, User } = require("../models/user-admin");
+const Movie = require("../models/movie");
+const User = require("../models/user");
+const Admin = require("../models/admin");
 
 async function createMovieListing(req, res) {
   try {
@@ -54,12 +55,11 @@ async function updateMovieListing(req, res) {
 async function deleteMovieListing(req, res) {
   try {
     const id = req.params.id;
-        const movie = await Movie.findByIdAndDelete(id);
+    const movie = await Movie.findByIdAndDelete(id);
     if (movie.createdBy.toString() !== req.user._id.toString())
       return res
         .status(403)
         .json({ message: "You are not authorized", success: false });
-    
 
     if (!movie)
       return res
