@@ -1,5 +1,6 @@
 const Movie = require("../models/movie-listing");
 const { Admin, User } = require("../models/user-admin");
+const mongoose = require("mongoose");
 
 async function createMovieListing(req, res) {
   try {
@@ -101,18 +102,16 @@ async function checkAvailableShows(req, res) {
 }
 
 async function bookMovieShow(req, res) {
+  const session = await mongoose.startSession();
   try {
     const { movieId, showId, seats } = req.body;
-    let movie = await Movie.findById(movieId);
-    if (!movie)
-      return res
-        .status(404)
-        .json({ message: "Movie not Found", success: false });
-    const show = movie.shows.id(showId);
-    if (!show)
-      return res
-        .status(404)
-        .json({ message: "Show not Found", success: false });
+    if(!mongoose.Types.ObjectId.isValid(movieId) || !mongoose.Types.ObjectId.isValid(showId) ) {
+      return res.status(400).json({
+        success: false,
+        message: "Invalid movie or show ID",
+      });
+    }
+
     if (!Number.isInteger(seats)) {
       return res.status(400).json({
         message: "Seats must be an Number",
@@ -125,13 +124,32 @@ async function bookMovieShow(req, res) {
         success: false,
       });
     }
+    // using startTransaction
+    session.startTransaction();
+    
+    let movie = await Movie.findById(movieId).session(session);
+    if (!movie){
+      await session.abortTransaction();
+      return res
+        .status(404)
+        .json({ message: "Movie not Found", success: false });
+    }
+    const show = movie.shows.id(showId);
+    if (!show)
+      await session.abortTransaction();
+      return res
+        .status(404)
+        .json({ message: "Show not Found", success: false });
+    
     if (show.availableSeats < seats)
+      await session.abortTransaction();
       return res
         .status(400)
         .json({ message: "Not enough seats available", success: false });
 
-    const user = await User.findById(req.user._id);
+    const user = await User.findById(req.user._id).session(session);
     if (!user)
+      await session.abortTransaction();
       return res
         .status(404)
         .json({ message: "User not Found", success: false });
@@ -142,13 +160,22 @@ async function bookMovieShow(req, res) {
       showId: showId,
     });
     show.availableSeats -= seats;
-    await user.save();
-    await movie.save();
+    await user.save({session});
+    await movie.save({session});
+    await session.commitTransaction();
 
-    res.status(200).json({ message: "Show Booked", success: true });
+    res.status(200).json({ message: "Show Booked successfully", success: true , booking: {
+        movieId,
+        showId,
+        seats: seats,
+        status: "Confirmed",
+      }, });
   } catch (err) {
+    await session.abortTransaction();
     console.log("error", err);
     res.status(500).json({ message: "Unexpected Error", success: false });
+  }finally{
+    await session.endSession();
   }
 }
 
