@@ -9,7 +9,7 @@ const {
   loginAdmin,
   deleteAdmin,
   checkListedMovies,
-} = require("../controllers/admin-account");
+} = require("../controllers/admin-controller");
 
 router.post("/register", registerAdmin);
 

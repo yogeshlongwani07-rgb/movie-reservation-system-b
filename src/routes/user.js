@@ -8,7 +8,7 @@ const {
   deleteUser,
   checkMyBookings,
   cancelBooking,
-} = require("../controllers/user-account");
+} = require("../controllers/user-controller");
 
 router.post("/register", registerUser);
 router.post("/login", loginUser);

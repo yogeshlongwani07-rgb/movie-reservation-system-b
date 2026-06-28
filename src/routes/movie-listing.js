@@ -11,7 +11,7 @@ const {
   checkAvailableShows,
   bookMovieShow,
   getMovieOwner,
-} = require("../controllers/Movie-listing-controller");
+} = require("../controllers/movie-controller");
 
 //Movies CRUD
 router.get("/", allMovies);
