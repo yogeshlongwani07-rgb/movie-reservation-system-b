@@ -17,8 +17,8 @@ class MovieDomain {
       $push: { movies: movieId },
     });
   }
-  async allMovies() {
-    const movie = await Movie.find({});
+  async allMovies(limit, skip) {
+    const movie = await Movie.find({}).skip(skip).limit(limit);
     return movie;
   }
 

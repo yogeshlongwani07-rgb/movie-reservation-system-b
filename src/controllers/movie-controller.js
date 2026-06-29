@@ -17,7 +17,10 @@ async function createMovie(req, res) {
 
 async function getAllMovies(req, res) {
   try {
-    const movie = await MovieDomain.allMovies();
+    const page = Number(req.query.page) || 1;
+    const limit = Number(req.query.limit) || 5;
+    const skip = (page - 1) * limit;
+    const movie = await MovieDomain.allMovies(limit, skip);
     res.status(200).send(movie);
   } catch (err) {
     console.log("error", err);
