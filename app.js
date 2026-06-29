@@ -33,7 +33,7 @@ if (process.env.NODE_ENV === "production") {
 }
 
 const port = process.env.PORT || 3000;
-const connectToDb = require("./src/DB/connect");
+const connectToDb = require("./src/config/connect");
 const adminRoutes = require("./src/routes/admin");
 const cookieParser = require("cookie-parser");
 const movieListingRoutes = require("./src/routes/movie-listing");

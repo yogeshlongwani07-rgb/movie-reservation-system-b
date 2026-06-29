@@ -1,16 +1,12 @@
 const Movie = require("../models/movie");
 const User = require("../models/user");
 const Admin = require("../models/admin");
+const MovieDomain = require("../domain/movie-domain");
 
 async function createMovieListing(req, res) {
   try {
-    const listing = await Movie.create({
-      ...req.body,
-      createdBy: req.user._id,
-    });
-    await Admin.findByIdAndUpdate(req.user._id, {
-      $push: { movies: listing._id },
-    });
+    const listing = await MovieDomain.create(req.body, req.user._id);
+    await MovieDomain.pushMovieToAdmin(req.user._id, listing._id);
     res.status(201).json({ message: "Movie added", success: true });
   } catch (err) {
     console.log("error", err);
@@ -20,7 +16,7 @@ async function createMovieListing(req, res) {
 
 async function allMovies(req, res) {
   try {
-    const movie = await Movie.find({});
+    const movie = await MovieDomain.allMovies();
     res.status(200).send(movie);
   } catch (err) {
     console.log("error", err);
@@ -31,22 +27,15 @@ async function allMovies(req, res) {
 async function updateMovieListing(req, res) {
   try {
     const { id } = req.params;
-    const movie = await Movie.findById(id);
-    if (!movie)
-      return res
-        .status(404)
-        .json({ message: "Movie not Found", success: false });
-
-    if (movie.createdBy.toString() !== req.user._id.toString())
-      return res
-        .status(403)
-        .json({ message: "You are not authorized", success: false });
-
-    Object.assign(movie, req.body);
-    await movie.save();
+    const movie = await MovieDomain.updateMovie(id, req.user._id);
 
     res.json({ message: "Movie Updated", success: true });
   } catch (err) {
+    if (err instanceof AppError) {
+      return res
+        .status(err.statusCode)
+        .json({ message: err.message, success: false });
+    }
     console.log("error", err);
     res.status(500).json({ message: "Unexpected Error", success: false });
   }
