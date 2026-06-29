@@ -5,7 +5,7 @@ const MovieDomain = require("../domain/movie-domain");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 
-async function createMovieListing(req, res) {
+async function createMovie(req, res) {
   try {
     const listing = await MovieDomain.create(req.body, req.user._id);
     await MovieDomain.pushMovieToAdmin(req.user._id, listing._id);
@@ -16,7 +16,7 @@ async function createMovieListing(req, res) {
   }
 }
 
-async function allMovies(req, res) {
+async function getAllMovies(req, res) {
   try {
     const movie = await MovieDomain.allMovies();
     res.status(200).send(movie);
@@ -26,7 +26,7 @@ async function allMovies(req, res) {
   }
 }
 
-async function updateMovieListing(req, res) {
+async function updateMovie(req, res) {
   try {
     const { id } = req.params;
     const movie = await MovieDomain.updateMovie(id, req.user._id);
@@ -43,7 +43,7 @@ async function updateMovieListing(req, res) {
   }
 }
 
-async function deleteMovieListing(req, res) {
+async function deleteMovie(req, res) {
   try {
     const { id } = req.params;
     const movie = await MovieDomain.deleteMovie(id, req.user._id);
@@ -60,7 +60,7 @@ async function deleteMovieListing(req, res) {
   }
 }
 
-async function checkAvailableShows(req, res) {
+async function getAvailableShows(req, res) {
   try {
     const { date } = req.query;
     const shows = await MovieDomain.checkMovieByDate(date);
@@ -76,7 +76,7 @@ async function checkAvailableShows(req, res) {
   }
 }
 
-async function bookMovieShow(req, res) {
+async function createBooking(req, res) {
   const session = await mongoose.startSession();
   try {
     const { movieId, showId, seats } = req.body;
@@ -113,10 +113,10 @@ async function bookMovieShow(req, res) {
 }
 
 module.exports = {
-  createMovieListing,
-  updateMovieListing,
-  deleteMovieListing,
-  allMovies,
-  checkAvailableShows,
-  bookMovieShow,
+  createMovie,
+  getAllMovies,
+  updateMovie,
+  deleteMovie,
+  getAvailableShows,
+  createBooking,
 };
