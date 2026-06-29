@@ -1,62 +1,21 @@
 const Admin = require("../models/admin");
 const Movie = require("../models/movie");
-const validator = require("validator");
-const bcrypt = require("bcrypt");
-const generateToken = require("../utils/generateToken");
+
+const AdminDomain = require("../domain/admin-domain");
+const AppError = require("../utils/appError");
 
 async function registerAdmin(req, res) {
   try {
     let { name, password, email, role, passkey } = req.body;
 
-    if (!role)
-      return res.status(403).json({
-        success: false,
-        message: "Unauthorized. Only administrators can create admin accounts.",
-      });
-
-    if (!passkey || passkey !== process.env.PASSKEY) {
-      return res.status(403).json({
-        success: false,
-        message: "Unauthorized. Invalid passkey.",
-      });
-    }
-
-    if (!name || !password || !email)
-      return res
-        .status(400)
-        .json({ message: "Missing required field", success: false });
-
-    email = email.trim().toLowerCase();
-
-    if (!validator.isEmail(email))
-      return res.status(400).json({
-        success: false,
-        message: "Invalid email address",
-      });
-
-    const duplicateEmail = await Admin.findOne({ email });
-
-    if (duplicateEmail)
-      return res
-        .status(409)
-        .json({ message: "Email already exist", success: false });
-
-    if (password.length < 6)
-      return res.status(400).json({
-        message: "Password length should be more than 6",
-        success: false,
-      });
-    const saltRounds = Number(process.env.SALT_ROUNDS);
-
-    const hashPassword = await bcrypt.hash(password, saltRounds);
-
-    const newAdmin = await Admin.create({
+    const admin = await AdminDomain.createAdmin(
       name,
-      password: hashPassword,
+      password,
       email,
       role,
-    });
-    const token = generateToken(newAdmin);
+      passkey,
+    );
+    const { token } = admin;
     res.cookie("token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -67,6 +26,11 @@ async function registerAdmin(req, res) {
       .status(201)
       .json({ message: "Account Created", success: true, token: token });
   } catch (err) {
+    if (err instanceof AppError) {
+      return res
+        .status(err.statusCode)
+        .json({ message: err.message, success: false });
+    }
     console.log("error", err);
     return res.status(500).json({
       message: "Unexpected Error",
