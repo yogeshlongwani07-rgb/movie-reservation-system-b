@@ -35,18 +35,28 @@ class MovieDomain {
     await movie.save();
     return movie;
   }
-  async deleteMovie(id, userId) {
-    const movie = await Movie.findById(id);
+
+  async deleteMovie(id, userId, session) {
+    const stringUserId = userId.toString();
+    const movie = await Movie.findById(id).session(session);
     if (!movie) {
       throw new AppError("Movie not Found", 404);
     }
-    if (movie.createdBy.toString() !== userId.toString()) {
+    if (movie.createdBy.toString() !== stringUserId) {
       throw new AppError("You are not authorized", 403);
     }
 
+    const admin = await Admin.findById(stringUserId).session(session);
+
+    admin.movies = admin.movies.filter((movie) => {
+      return movie.toString() !== id;
+    });
+
+    await admin.save();
     await movie.deleteOne();
     return movie;
   }
+
   async checkMovieByDate(date) {
     const shows = await Movie.aggregate([
       { $unwind: "$shows" },

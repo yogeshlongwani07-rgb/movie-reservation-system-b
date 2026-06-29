@@ -44,19 +44,25 @@ async function updateMovie(req, res) {
 }
 
 async function deleteMovie(req, res) {
+  const session = await mongoose.startSession();
   try {
+    await session.startTransaction();
     const { id } = req.params;
-    const movie = await MovieDomain.deleteMovie(id, req.user._id);
-
+    const movie = await MovieDomain.deleteMovie(id, req.user._id, session);
+    await session.commitTransaction();
     res.json({ message: "Movie Deleted", success: true });
   } catch (err) {
     if (err instanceof AppError) {
+      await session.abortTransaction();
       return res
         .status(err.statusCode)
         .json({ message: err.message, success: false });
     }
+    await session.abortTransaction();
     console.log("error", err);
     res.status(500).json({ message: "Unexpected Error", success: false });
+  } finally {
+    await session.endSession();
   }
 }
 
