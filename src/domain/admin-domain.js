@@ -2,6 +2,8 @@ const AppError = require("../utils/appError");
 const Admin = require("../models/admin");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -82,6 +84,21 @@ class AdminDomain {
       throw new AppError("Admin not Found", 404);
     }
     return admin;
+  }
+  async makeFreshAccessToken(refreshToken) {
+    if (!refreshToken) {
+      throw new AppError("Refresh token Not Found", 400);
+    }
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const admin = await Admin.findById(decoded._id);
+    if (!admin) {
+      throw new AppError("Admin not Found", 400);
+    }
+    if (admin.refreshToken !== refreshToken) {
+      throw new AppError("Invalid refresh token", 405);
+    }
+    const accessToken = generateAccessToken(admin);
+    return accessToken;
   }
 }
 

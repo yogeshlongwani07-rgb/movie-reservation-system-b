@@ -2,6 +2,8 @@ const Movie = require("../models/movie");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const AppError = require("../utils/appError");
+const jwt = require("jsonwebtoken");
+
 const {
   generateAccessToken,
   generateRefreshToken,
@@ -109,6 +111,22 @@ class UserDomain {
     }
     await movie.save({ session });
     await user.save({ session });
+  }
+
+  async makeFreshAccessToken(refreshToken) {
+    if (!refreshToken) {
+      throw new AppError("Refresh token Not Found", 400);
+    }
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const user = await User.findById(decoded._id);
+    if (!user) {
+      throw new AppError("User not Found", 400);
+    }
+    if (user.refreshToken !== refreshToken) {
+      throw new AppError("Invalid refresh token", 405);
+    }
+    const accessToken = generateAccessToken(user);
+    return accessToken;
   }
 }
 

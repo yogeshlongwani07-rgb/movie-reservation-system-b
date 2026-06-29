@@ -151,29 +151,8 @@ async function cancelBooking(req, res) {
 async function refreshAccessToken(req, res) {
   try {
     const refreshToken = req.cookies.refreshToken;
-    if (!refreshToken) {
-      return res.status(401).json({
-        success: false,
-        message: "Refresh token not found",
-      });
-    }
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const user = await User.findById(decoded._id);
+    const accessToken = await UserDomain.makeFreshAccessToken(refreshToken);
 
-    if (!user) {
-      return res.status(404).json({
-        success: false,
-        message: "User not found",
-      });
-    }
-
-    if (user.refreshToken !== refreshToken) {
-      return res.status(403).json({
-        message: "Invalid refresh token",
-      });
-    }
-
-    const accessToken = generateAccessToken(user);
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
@@ -186,6 +165,11 @@ async function refreshAccessToken(req, res) {
       message: "Access token refreshed",
     });
   } catch (err) {
+    if (err instanceof AppError) {
+      return res
+        .status(err.statusCode)
+        .json({ message: err.message, success: false });
+    }
     console.log(err);
     return res.status(401).json({
       success: false,
