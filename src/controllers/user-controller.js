@@ -1,10 +1,5 @@
 const User = require("../models/user");
-const validator = require("validator");
-const bcrypt = require("bcrypt");
-const Movie = require("../models/movie");
-const generateToken = require("../utils/generateToken");
 const UserDomain = require("../domain/user-domain");
-
 const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 

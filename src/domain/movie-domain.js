@@ -48,7 +48,6 @@ class MovieDomain {
     return movie;
   }
   async checkMovieByDate(date) {
-    const movie = await Movie.find({ date: date });
     const shows = await Movie.aggregate([
       { $unwind: "$shows" },
       { $match: { "shows.date": date, "shows.availableSeats": { $gt: 0 } } },

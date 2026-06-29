@@ -1,8 +1,6 @@
 const Movie = require("../models/movie");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
-
-const AdminDomain = require("../domain/admin-domain");
 const AppError = require("../utils/appError");
 const generateToken = require("../utils/generateToken");
 const User = require("../models/user");

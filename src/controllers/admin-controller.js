@@ -1,9 +1,7 @@
 const Admin = require("../models/admin");
 const Movie = require("../models/movie");
-const bcrypt = require("bcrypt");
 const AdminDomain = require("../domain/admin-domain");
 const AppError = require("../utils/appError");
-const generateToken = require("../utils/generateToken");
 
 async function registerAdmin(req, res) {
   try {
