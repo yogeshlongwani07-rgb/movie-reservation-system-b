@@ -2,7 +2,7 @@ var jwt = require("jsonwebtoken");
 function generateAccessToken(obj) {
   const SecretKey = process.env.ACCESS_TOKEN_SECRET;
   return jwt.sign({ role: obj.role, _id: obj._id }, SecretKey, {
-    expiresIn: "20s",
+    expiresIn: "10s",
   });
 }
 
