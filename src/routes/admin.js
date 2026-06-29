@@ -1,8 +1,7 @@
 const express = require("express");
 const router = express.Router();
 
-const { isLoggedIn } = require("../middleware/auth");
-const { isAdmin } = require("../middleware/admin-perform-auth");
+const { isLoggedIn, isAdmin } = require("../middleware/auth");
 
 const {
   registerAdmin,

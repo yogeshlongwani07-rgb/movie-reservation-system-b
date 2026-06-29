@@ -1,8 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { isLoggedIn } = require("../middleware/auth");
-const { isAdmin } = require("../middleware/admin-perform-auth");
-const { isUser } = require("../middleware/user-auth");
+const { isLoggedIn, isUser, isAdmin } = require("../middleware/auth");
 const {
   createMovieListing,
   allMovies,
