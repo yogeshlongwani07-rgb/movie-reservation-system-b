@@ -8,7 +8,6 @@ const {
   deleteMovieListing,
   checkAvailableShows,
   bookMovieShow,
-  getMovieOwner,
 } = require("../controllers/movie-controller");
 
 //Movies CRUD
@@ -20,5 +19,4 @@ router.delete("/delete/:id", isLoggedIn, isAdmin, deleteMovieListing);
 //Movies Details
 router.get("/shows", isLoggedIn, checkAvailableShows);
 router.post("/bookings", isLoggedIn, isUser, bookMovieShow);
-router.get("/owner/:id", getMovieOwner);
 module.exports = router;
