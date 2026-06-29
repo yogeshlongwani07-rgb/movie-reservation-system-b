@@ -15,6 +15,8 @@ async function registerUser(req, res) {
         .status(400)
         .json({ message: "Missing required field", success: false });
 
+    email = email.trim().toLowerCase();
+
     if (!validator.isEmail(email))
       return res.status(400).json({
         success: false,
@@ -42,7 +44,6 @@ async function registerUser(req, res) {
       password: hashPassword,
       email,
     });
-    const SECRET = process.env.SECRET_JWT;
     const token = generateToken(newUser);
     res.cookie("token", token, {
       httpOnly: true,
@@ -75,6 +76,8 @@ async function loginUser(req, res) {
         .status(400)
         .json({ message: "Missing required field", success: false });
 
+    email = email.trim().toLowerCase();
+
     const user = await User.findOne({ email });
     if (!user)
       return res
@@ -86,7 +89,6 @@ async function loginUser(req, res) {
         .status(400)
         .json({ message: "Invalid Credentials", success: false });
 
-    const SECRET = process.env.SECRET_JWT;
     const token = generateToken(user);
     res.cookie("token", token, {
       httpOnly: true,

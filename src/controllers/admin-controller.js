@@ -7,6 +7,7 @@ const generateToken = require("../utils/generateToken");
 async function registerAdmin(req, res) {
   try {
     const { name, password, email, role, passkey } = req.body;
+
     if (!role)
       return res.status(403).json({
         success: false,
@@ -24,6 +25,8 @@ async function registerAdmin(req, res) {
       return res
         .status(400)
         .json({ message: "Missing required field", success: false });
+
+    email = email.trim().toLowerCase();
 
     if (!validator.isEmail(email))
       return res.status(400).json({
@@ -53,7 +56,6 @@ async function registerAdmin(req, res) {
       email,
       role,
     });
-    const SECRET = process.env.SECRET_JWT;
     const token = generateToken(newAdmin);
     res.cookie("token", token, {
       httpOnly: true,
@@ -81,6 +83,8 @@ async function loginAdmin(req, res) {
         .status(400)
         .json({ message: "Missing required field", success: false });
 
+    email = email.trim().toLowerCase();
+
     const admin = await Admin.findOne({ email });
     if (!admin)
       return res
@@ -92,7 +96,6 @@ async function loginAdmin(req, res) {
         .status(400)
         .json({ message: "Invalid Credentials", success: false });
 
-    const SECRET = process.env.SECRET_JWT;
     const token = generateToken(admin);
     res.cookie("token", token, {
       httpOnly: true,
