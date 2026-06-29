@@ -2,18 +2,18 @@ var jwt = require("jsonwebtoken");
 
 function isLoggedIn(req, res, next) {
   try {
-    const token = req.cookies.token;
+    const token = req.cookies.accessToken;
     if (!token)
       return res
         .status(401)
         .json({ message: "Please log in first", success: false });
-    const SECRET_JWT = process.env.SECRET_JWT;
-    const decode = jwt.verify(token, SECRET_JWT);
+    const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+    const decode = jwt.verify(token, ACCESS_TOKEN_SECRET);
     req.user = decode;
     next();
   } catch (err) {
     console.log("error", err);
-    res.status(401).json({ message: "Unexpected Error", success: false });
+    res.status(401).json({ message: "Token not Found", success: false });
   }
 }
 

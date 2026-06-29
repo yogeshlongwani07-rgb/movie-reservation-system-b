@@ -2,7 +2,10 @@ const Movie = require("../models/movie");
 const bcrypt = require("bcrypt");
 const validator = require("validator");
 const AppError = require("../utils/appError");
-const generateToken = require("../utils/generateToken");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../utils/generateToken");
 const User = require("../models/user");
 
 class UserDomain {
@@ -31,8 +34,12 @@ class UserDomain {
       password: hashPassword,
       email,
     });
-    const token = generateToken(newUser);
-    return { token };
+
+    const accessToken = generateAccessToken(newUser);
+    const refreshToken = generateRefreshToken(newUser);
+    newUser.refreshToken = refreshToken;
+    await newUser.save();
+    return { accessToken, refreshToken };
   }
 
   async userLogin(email, password, role) {
@@ -48,8 +55,11 @@ class UserDomain {
     if (!validatePassword) {
       throw new AppError("Invalid Credentials", 400);
     }
-    const token = generateToken(user);
-    return { token };
+    const accessToken = generateAccessToken(user);
+    const refreshToken = generateRefreshToken(user);
+    user.refreshToken = refreshToken;
+    await user.save();
+    return { accessToken, refreshToken };
   }
   async userDelete(id) {
     const user = await User.findByIdAndDelete(id);

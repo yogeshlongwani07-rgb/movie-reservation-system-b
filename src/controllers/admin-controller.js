@@ -2,6 +2,8 @@ const Admin = require("../models/admin");
 const Movie = require("../models/movie");
 const AdminDomain = require("../domain/admin-domain");
 const AppError = require("../utils/appError");
+const jwt = require("jsonwebtoken");
+const { generateAccessToken } = require("../utils/generateToken");
 
 async function registerAdmin(req, res) {
   try {
@@ -14,8 +16,14 @@ async function registerAdmin(req, res) {
       role,
       passkey,
     );
-    const { token } = admin;
-    res.cookie("token", token, {
+    const { accessToken, refreshToken } = admin;
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -23,7 +31,7 @@ async function registerAdmin(req, res) {
     });
     res
       .status(201)
-      .json({ message: "Account Created", success: true, token: token });
+      .json({ message: "Account Created", success: true, token: accessToken });
   } catch (err) {
     if (err instanceof AppError) {
       return res
@@ -42,8 +50,14 @@ async function loginAdmin(req, res) {
   try {
     let { email, password } = req.body;
     const admin = await AdminDomain.loginAdmin(email, password);
-    let { token } = admin;
-    res.cookie("token", token, {
+    const { accessToken, refreshToken } = admin;
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -51,7 +65,7 @@ async function loginAdmin(req, res) {
     });
     res
       .status(200)
-      .json({ message: "Your are Login!", success: true, token: token });
+      .json({ message: "Your are Login!", success: true, token: accessToken });
   } catch (err) {
     if (err instanceof AppError) {
       return res
@@ -107,4 +121,56 @@ async function checkListedMovies(req, res) {
   }
 }
 
-module.exports = { registerAdmin, loginAdmin, deleteAdmin, checkListedMovies };
+async function refreshAccessToken(req, res) {
+  try {
+    const refreshToken = req.cookies.refreshToken;
+    if (!refreshToken) {
+      return res.status(401).json({
+        success: false,
+        message: "Refresh token not found",
+      });
+    }
+    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    const admin = await Admin.findById(decoded._id);
+
+    if (!admin) {
+      return res.status(404).json({
+        success: false,
+        message: "Admin not found",
+      });
+    }
+
+    if (admin.refreshToken !== refreshToken) {
+      return res.status(403).json({
+        message: "Invalid refresh token",
+      });
+    }
+
+    const accessToken = generateAccessToken(admin);
+    res.cookie("accessToken", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 15 * 60 * 1000, // 15 minutes
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Access token refreshed",
+    });
+  } catch (err) {
+    console.log(err);
+    return res.status(401).json({
+      success: false,
+      message: "Refresh token expired or invalid",
+    });
+  }
+}
+
+module.exports = {
+  registerAdmin,
+  loginAdmin,
+  deleteAdmin,
+  checkListedMovies,
+  refreshAccessToken,
+};
