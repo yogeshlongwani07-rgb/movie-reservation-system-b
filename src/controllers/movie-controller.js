@@ -1,5 +1,4 @@
 const Movie = require("../models/movie");
-const User = require("../models/user");
 const Admin = require("../models/admin");
 const MovieDomain = require("../domain/movie-domain");
 const AppError = require("../utils/appError");
@@ -12,7 +11,7 @@ async function createMovie(req, res) {
     res.status(201).json({ message: "Movie added", success: true });
   } catch (err) {
     console.log("error", err);
-    res.status(400).json({ message: "Unexpected Error", success: false });
+    res.status(500).json({ message: "Unexpected Error", success: false });
   }
 }
 
@@ -22,7 +21,7 @@ async function getAllMovies(req, res) {
     res.status(200).send(movie);
   } catch (err) {
     console.log("error", err);
-    res.status(400).json({ message: "Unexpected Error", success: false });
+    res.status(500).json({ message: "Unexpected Error", success: false });
   }
 }
 
@@ -92,7 +91,7 @@ async function createBooking(req, res) {
     );
     await session.commitTransaction();
 
-    res.status(200).json({
+    res.status(201).json({
       message: "Show Booked successfully",
       success: true,
       booking: {
