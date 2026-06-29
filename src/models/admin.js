@@ -22,6 +22,10 @@ const adminSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    refreshToken: {
+      type: String,
+      default: null,
+    },
     movies: [
       {
         type: mongoose.Schema.Types.ObjectId,

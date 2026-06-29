@@ -2,7 +2,10 @@ const AppError = require("../utils/appError");
 const Admin = require("../models/admin");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
-const generateToken = require("../utils/generateToken");
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../utils/generateToken");
 const Movie = require("../models/movie");
 
 class AdminDomain {
@@ -40,8 +43,11 @@ class AdminDomain {
       email,
       role,
     });
-    const token = generateToken(newAdmin);
-    return { token };
+    const accessToken = generateAccessToken(newAdmin);
+    const refreshToken = generateRefreshToken(newAdmin);
+    newAdmin.refreshToken = refreshToken;
+    await newAdmin.save();
+    return { accessToken, refreshToken };
   }
   async loginAdmin(email, password) {
     if (!email || !password) {
@@ -56,8 +62,11 @@ class AdminDomain {
     if (!validatePassword) {
       throw new AppError("Invalid Credentials", 400);
     }
-    const token = generateToken(admin);
-    return { token };
+    const accessToken = generateAccessToken(admin);
+    const refreshToken = generateRefreshToken(admin);
+    admin.refreshToken = refreshToken;
+    await admin.save();
+    return { accessToken, refreshToken };
   }
 
   async deleteAdmin(id) {

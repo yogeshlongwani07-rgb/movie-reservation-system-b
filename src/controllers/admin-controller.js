@@ -14,8 +14,14 @@ async function registerAdmin(req, res) {
       role,
       passkey,
     );
-    const { token } = admin;
-    res.cookie("token", token, {
+    const { accessToken, refreshToken } = admin;
+    res.cookie("token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.cookie("token", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -23,7 +29,7 @@ async function registerAdmin(req, res) {
     });
     res
       .status(201)
-      .json({ message: "Account Created", success: true, token: token });
+      .json({ message: "Account Created", success: true, token: accessToken });
   } catch (err) {
     if (err instanceof AppError) {
       return res
@@ -42,8 +48,14 @@ async function loginAdmin(req, res) {
   try {
     let { email, password } = req.body;
     const admin = await AdminDomain.loginAdmin(email, password);
-    let { token } = admin;
-    res.cookie("token", token, {
+    const { accessToken, refreshToken } = admin;
+    res.cookie("token", accessToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+    res.cookie("token", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
@@ -51,7 +63,7 @@ async function loginAdmin(req, res) {
     });
     res
       .status(200)
-      .json({ message: "Your are Login!", success: true, token: token });
+      .json({ message: "Your are Login!", success: true, token: accessToken });
   } catch (err) {
     if (err instanceof AppError) {
       return res

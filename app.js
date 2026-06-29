@@ -1,5 +1,10 @@
 require("dotenv").config();
-const requiredEnvVars = ["MONGO_URL", "SECRET_JWT", "SALT_ROUNDS", "PASSKEY"];
+const requiredEnvVars = [
+  "MONGO_URL",
+  "ACCESS_TOKEN_SECRET",
+  "SALT_ROUNDS",
+  "PASSKEY",
+];
 for (const varName of requiredEnvVars) {
   if (!process.env[varName]) {
     console.error(`${varName} not found`);

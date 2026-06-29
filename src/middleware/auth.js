@@ -7,8 +7,8 @@ function isLoggedIn(req, res, next) {
       return res
         .status(401)
         .json({ message: "Please log in first", success: false });
-    const SECRET_JWT = process.env.SECRET_JWT;
-    const decode = jwt.verify(token, SECRET_JWT);
+    const ACCESS_TOKEN_SECRET = process.env.ACCESS_TOKEN_SECRET;
+    const decode = jwt.verify(token, ACCESS_TOKEN_SECRET);
     req.user = decode;
     next();
   } catch (err) {
