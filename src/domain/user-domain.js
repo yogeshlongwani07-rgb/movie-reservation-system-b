@@ -12,19 +12,9 @@ const User = require("../models/user");
 
 class UserDomain {
   async registerUser(name, password, email) {
-    if (!name || !password || !email) {
-      throw new AppError("Missing required field", 400);
-    }
-    email = email.trim().toLowerCase();
-    if (!validator.isEmail(email)) {
-      throw new AppError("Invalid email address", 400);
-    }
     const duplicateEmail = await UserRepository.findByEmail(email);
     if (duplicateEmail) {
       throw new AppError("Email already exists", 409);
-    }
-    if (password.length < 6) {
-      throw new AppError("Password length should be more than 6", 400);
     }
 
     const saltRounds = Number(process.env.SALT_ROUNDS);
@@ -45,10 +35,7 @@ class UserDomain {
   }
 
   async userLogin(email, password) {
-    if (!email || !password) {
-      throw new AppError("Missing required field", 400);
-    }
-    email = email.trim().toLowerCase();
+
     const user = await UserRepository.findByEmail(email);
     if (!user) {
       throw new AppError("User not Found", 400);

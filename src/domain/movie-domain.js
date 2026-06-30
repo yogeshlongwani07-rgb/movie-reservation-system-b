@@ -55,7 +55,7 @@ class MovieDomain {
     });
 
     await MovieRepository.saveWithSession(admin, session);
-    await MovieRepository.deleteOne(movie,session);
+    await MovieRepository.deleteOne(movie, session);
     return movie;
   }
 
