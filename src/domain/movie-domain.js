@@ -3,27 +3,26 @@ const User = require("../models/user");
 const Admin = require("../models/admin");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
+const MovieRepository = require("../repositories/movie.repository");
 
 class MovieDomain {
   async create(body, userId) {
-    const listing = await Movie.create({
+    const listing = await MovieRepository.create({
       ...body,
       createdBy: userId,
     });
     return listing;
   }
   async pushMovieToAdmin(userId, movieId) {
-    await Admin.findByIdAndUpdate(userId, {
-      $push: { movies: movieId },
-    });
+    await MovieRepository.findByIdAndUpdate(userId, movieId);
   }
   async allMovies(limit, skip) {
-    const movie = await Movie.find({}).skip(skip).limit(limit);
+    const movie = await MovieRepository.findMovies(limit, skip);
     return movie;
   }
 
   async updateMovie(id, userId, body) {
-    let movie = await Movie.findById(id);
+    let movie = await MovieRepository.findById(id);
     if (!movie) {
       throw new AppError("Movie not Found", 404);
     }
@@ -32,13 +31,13 @@ class MovieDomain {
     }
 
     Object.assign(movie, body);
-    await movie.save();
+    await MovieRepository.save(movie);
     return movie;
   }
 
   async deleteMovie(id, userId, session) {
     const stringUserId = userId.toString();
-    const movie = await Movie.findById(id).session(session);
+    const movie = await MovieRepository.findByIdWithSession(id, session);
     if (!movie) {
       throw new AppError("Movie not Found", 404);
     }
@@ -46,33 +45,22 @@ class MovieDomain {
       throw new AppError("You are not authorized", 403);
     }
 
-    const admin = await Admin.findById(stringUserId).session(session);
+    const admin = await MovieRepository.findByIdWithSessionAndAdmin(
+      stringUserId,
+      session,
+    );
 
     admin.movies = admin.movies.filter((movie) => {
       return movie.toString() !== id;
     });
 
-    await admin.save();
-    await movie.deleteOne();
+    await MovieRepository.saveWithSession(admin, session);
+    await MovieRepository.deleteOne(movie,session);
     return movie;
   }
 
   async checkMovieByDate(date) {
-    const shows = await Movie.aggregate([
-      { $unwind: "$shows" },
-      { $match: { "shows.date": date, "shows.availableSeats": { $gt: 0 } } },
-      {
-        $project: {
-          title: 1,
-          duration: 1,
-          price: 1,
-          rating: 1,
-          shows: "$shows",
-        },
-      },
-      { $sort: { "shows.showTime": 1 } },
-    ]);
-
+    const shows = await MovieRepository.checkMovieByDate(date);
     return shows;
   }
   async bookTickets(movieId, showId, seats, userId, session) {
@@ -88,23 +76,22 @@ class MovieDomain {
     if (seats < 1 || seats > 10) {
       throw new AppError("You can book between 1 and 10 seats only", 400);
     }
-    const movie = await Movie.findById(movieId).session(session);
+    const movie = await MovieRepository.findByIdWithSession(movieId, session);
     if (!movie) {
-      await session.abortTransaction();
       throw new AppError("Movie not Found", 404);
     }
     const show = movie.shows.id(showId);
     if (!show) {
-      await session.abortTransaction();
       throw new AppError("Show not Found", 404);
     }
     if (show.availableSeats < seats) {
-      await session.abortTransaction();
       throw new AppError("Not enough seats available", 400);
     }
-    const user = await User.findById(userId).session(session);
+    const user = await MovieRepository.findByIdWithSessionAndUser(
+      userId,
+      session,
+    );
     if (!user) {
-      await session.abortTransaction();
       throw new AppError("User not Found", 404);
     }
 
@@ -116,8 +103,8 @@ class MovieDomain {
     });
 
     show.availableSeats -= seats;
-    await user.save({ session });
-    await movie.save({ session });
+    await MovieRepository.saveWithSession(user, session);
+    await MovieRepository.saveWithSession(movie, session);
   }
 }
 

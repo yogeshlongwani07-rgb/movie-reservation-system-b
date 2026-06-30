@@ -3,6 +3,7 @@ const Admin = require("../models/admin");
 const validator = require("validator");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const AdminRepository = require("../repositories/admin.repository");
 
 const {
   generateAccessToken,
@@ -29,7 +30,7 @@ class AdminDomain {
     if (!validator.isEmail(email)) {
       throw new AppError("Invalid email address", 400);
     }
-    const duplicateEmail = await Admin.findOne({ email });
+    const duplicateEmail = await AdminRepository.findByEmail(email);
     if (duplicateEmail) {
       throw new AppError("Email already exist", 409);
     }
@@ -39,7 +40,7 @@ class AdminDomain {
     const saltRounds = Number(process.env.SALT_ROUNDS);
 
     const hashPassword = await bcrypt.hash(password, saltRounds);
-    const newAdmin = await Admin.create({
+    const newAdmin = await AdminRepository.create({
       name,
       password: hashPassword,
       email,
@@ -48,7 +49,7 @@ class AdminDomain {
     const accessToken = generateAccessToken(newAdmin);
     const refreshToken = generateRefreshToken(newAdmin);
     newAdmin.refreshToken = refreshToken;
-    await newAdmin.save();
+    await AdminRepository.save(newAdmin);
     return { accessToken, refreshToken };
   }
   async loginAdmin(email, password) {
@@ -56,7 +57,8 @@ class AdminDomain {
       throw new AppError("Missing required field", 400);
     }
     email = email.trim().toLowerCase();
-    const admin = await Admin.findOne({ email });
+    const admin = await AdminRepository.findByEmail(email);
+    // const admin = await Admin.findOne({ email });
     if (!admin) {
       throw new AppError("Admin not found", 400);
     }
@@ -67,19 +69,23 @@ class AdminDomain {
     const accessToken = generateAccessToken(admin);
     const refreshToken = generateRefreshToken(admin);
     admin.refreshToken = refreshToken;
-    await admin.save();
+    await AdminRepository.save(admin);
+    // await admin.save();
     return { accessToken, refreshToken };
   }
 
   async deleteAdmin(id) {
-    await Movie.deleteMany({
-      createdBy: id,
-    });
-    const admin = await Admin.findByIdAndDelete(id);
+    const admin = await AdminRepository.findByIdAndDelete(id);
+
+    if (!admin) {
+      throw new AppError("Admin not found", 404);
+    }
+
+    await AdminRepository.deleteAdminMovies(id);
   }
 
   async showAdminMovies(adminId) {
-    const admin = await Admin.findById(adminId).populate("movies");
+    const admin = await AdminRepository.findByIdWithMovies(adminId);
     if (!admin) {
       throw new AppError("Admin not Found", 404);
     }
@@ -90,7 +96,7 @@ class AdminDomain {
       throw new AppError("Refresh token Not Found", 400);
     }
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const admin = await Admin.findById(decoded._id);
+    const admin = await AdminRepository.findById(decoded._id);
     if (!admin) {
       throw new AppError("Admin not Found", 400);
     }
