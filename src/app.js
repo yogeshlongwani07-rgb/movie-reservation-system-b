@@ -2,7 +2,7 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 
 const adminRoutes = require("./routes/admin");
-const movieListingRoutes = require("./routes/movie-listing");
+const movieListingRoutes = require("./routes/movie");
 const userRoutes = require("./routes/user");
 
 function createApp() {

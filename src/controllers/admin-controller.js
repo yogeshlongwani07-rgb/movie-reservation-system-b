@@ -1,6 +1,6 @@
 const Admin = require("../models/admin");
 const Movie = require("../models/movie");
-const AdminDomain = require("../domain/admin-domain");
+const AdminDomain = require("../services/admin-domain");
 const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
 const { generateAccessToken } = require("../utils/generateToken");

@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const UserDomain = require("../domain/user-domain");
+const UserDomain = require("../services/user-domain");
 const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
