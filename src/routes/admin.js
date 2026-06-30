@@ -2,6 +2,11 @@ const express = require("express");
 const router = express.Router();
 
 const { isLoggedIn, isAdmin } = require("../middleware/auth");
+const validate = require("../middleware/validate");
+const {
+  registerAdminSchema,
+  loginAdminSchema,
+} = require("../validations/admin.validation");
 
 const {
   registerAdmin,
@@ -11,9 +16,9 @@ const {
   refreshAccessToken,
 } = require("../controllers/admin-controller");
 
-router.post("/register", registerAdmin);
+router.post("/register", validate(registerAdminSchema), registerAdmin);
 
-router.post("/login", loginAdmin);
+router.post("/login", validate(loginAdminSchema), loginAdmin);
 
 router.delete("/delete", isLoggedIn, isAdmin, deleteAdmin);
 

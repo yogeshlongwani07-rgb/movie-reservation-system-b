@@ -1,6 +1,4 @@
 const Movie = require("../models/movie");
-const User = require("../models/user");
-const Admin = require("../models/admin");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const MovieRepository = require("../repositories/movie.repository");
@@ -55,7 +53,7 @@ class MovieDomain {
     });
 
     await MovieRepository.saveWithSession(admin, session);
-    await MovieRepository.deleteOne(movie,session);
+    await MovieRepository.deleteOne(movie, session);
     return movie;
   }
 
@@ -64,18 +62,6 @@ class MovieDomain {
     return shows;
   }
   async bookTickets(movieId, showId, seats, userId, session) {
-    if (
-      !mongoose.Types.ObjectId.isValid(movieId) ||
-      !mongoose.Types.ObjectId.isValid(showId)
-    ) {
-      throw new AppError("Invalid movie or show ID", 400);
-    }
-    if (!Number.isInteger(seats)) {
-      throw new AppError("Seats must be an Number", 400);
-    }
-    if (seats < 1 || seats > 10) {
-      throw new AppError("You can book between 1 and 10 seats only", 400);
-    }
     const movie = await MovieRepository.findByIdWithSession(movieId, session);
     if (!movie) {
       throw new AppError("Movie not Found", 404);

@@ -13,7 +13,7 @@ function isLoggedIn(req, res, next) {
     next();
   } catch (err) {
     console.log("error", err);
-    res.status(401).json({ message: "Token not Found", success: false });
+    res.status(401).json({ message: "Please Login", success: false });
   }
 }
 
