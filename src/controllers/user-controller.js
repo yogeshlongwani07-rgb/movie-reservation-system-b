@@ -1,5 +1,5 @@
 const User = require("../models/user");
-const UserDomain = require("../domain/user-domain");
+const UserDomain = require("../services/user-domain");
 const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
@@ -15,7 +15,7 @@ async function registerUser(req, res) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 15 * 60 * 1000,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -23,9 +23,7 @@ async function registerUser(req, res) {
       sameSite: "strict",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-    res
-      .status(201)
-      .json({ message: "Account Created", success: true, token: accessToken });
+    res.status(201).json({ message: "Account Created", success: true });
   } catch (err) {
     if (err instanceof AppError) {
       return res
@@ -50,7 +48,7 @@ async function loginUser(req, res) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: 15 * 60 * 1000,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
@@ -59,9 +57,7 @@ async function loginUser(req, res) {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    res
-      .status(200)
-      .json({ message: "Your are Login!", success: true, token: accessToken });
+    res.status(200).json({ message: "Your are Login!", success: true });
   } catch (err) {
     if (err instanceof AppError) {
       return res
