@@ -21,6 +21,13 @@ const limiter = rateLimit({
 function createApp() {
   const app = express();
 
+  app.use(
+    cors({
+      origin: "http://localhost:5173",
+      credentials: true,
+    }),
+  );
+
   if (process.env.NODE_ENV === "production") {
     app.use(helmet());
 
