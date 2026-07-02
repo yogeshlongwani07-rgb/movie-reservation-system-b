@@ -117,7 +117,7 @@ async function checkMyBookings(req, res) {
 async function cancelBooking(req, res) {
   let session = await mongoose.startSession();
   try {
-    session.startTransaction();
+    await session.startTransaction();
     const { bookingId } = req.params;
     const userId = req.user._id;
     const user = await UserDomain.cancelBooking(bookingId, session, userId);
