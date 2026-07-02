@@ -3,6 +3,7 @@ const Admin = require("../models/admin");
 const MovieDomain = require("../services/movie-domain");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
+const { BOOKING_STATUS } = require("../Constants");
 
 async function createMovie(req, res) {
   try {
@@ -112,7 +113,7 @@ async function createBooking(req, res) {
         movieId,
         showId,
         seats: seats,
-        status: "Confirmed",
+        status: BOOKING_STATUS.CONFIRMED,
       },
     });
   } catch (err) {

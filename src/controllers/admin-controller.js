@@ -82,7 +82,7 @@ async function deleteAdmin(req, res) {
   try {
     await session.startTransaction();
     let id = req.user._id;
-    const admin = await AdminDomain.deleteAdmin(id);
+    const admin = await AdminDomain.deleteAdmin(id, session);
 
     await session.commitTransaction();
     res.json({
