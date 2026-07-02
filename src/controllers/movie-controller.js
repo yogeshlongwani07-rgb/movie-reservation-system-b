@@ -10,6 +10,11 @@ async function createMovie(req, res) {
     await MovieDomain.pushMovieToAdmin(req.user._id, listing._id);
     res.status(201).json({ message: "Movie added", success: true });
   } catch (err) {
+    if (err instanceof AppError) {
+      return res
+        .status(err.statusCode)
+        .json({ message: err.message, success: false });
+    }
     console.log("error", err);
     res.status(500).json({ message: "Unexpected Error", success: false });
   }
