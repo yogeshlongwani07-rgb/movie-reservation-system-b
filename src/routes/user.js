@@ -30,7 +30,8 @@ router.post(
 router.post("/refresh-token", refreshAccessToken);
 
 router.post("/logout", (req, res) => {
-  res.clearCookie("token");
+   res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
   res.json({
     success: true,
     message: "Logged out",
