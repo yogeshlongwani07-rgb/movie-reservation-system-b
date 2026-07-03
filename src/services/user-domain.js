@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
 const UserRepository = require("../repositories/user.repository");
-const { BOOKING_STATUS } = require("../Constants");
+const { BOOKING_STATUS, SEAT_STATUS } = require("../Constants");
 
 const {
   generateAccessToken,
@@ -66,34 +66,49 @@ class UserDomain {
     if (!user) {
       throw new AppError("User not Found", 404);
     }
-    const bookingIndex = user.bookings.findIndex(
-      (booking) => booking.showId.toString() === bookingId,
-    );
-    if (bookingIndex === -1) {
+    const booking = user.bookings.id(bookingId);
+    if (!booking) {
       throw new AppError("Booking not Found", 404);
     }
-    if (user.bookings[bookingIndex].status === BOOKING_STATUS.CANCELLED) {
-      throw new AppError("Booking is already cancelled", 404);
-    }
-    user.bookings[bookingIndex].status = BOOKING_STATUS.CANCELLED;
 
-    const movieID = user.bookings[bookingIndex].movie.toString();
+    if (booking.status === BOOKING_STATUS.CANCELLED) {
+      throw new AppError("Booking is already cancelled", 400);
+    }
+    booking.status = BOOKING_STATUS.CANCELLED;
+    booking.cancelledAt = new Date();
+
+    const movieID = booking.movie.toString();
     const movie = await UserRepository.findByIdWithSessionAndMovie(
       movieID,
       session,
     );
+    let show;
     if (movie) {
-      const show = movie.shows.id(user.bookings[bookingIndex].showId);
-      if (show) {
-        show.availableSeats += user.bookings[bookingIndex].seats;
-      } else {
-        throw new AppError("Show not found", 404);
-      }
+      show = movie.shows.id(booking.showId);
     } else {
       throw new AppError("Movie not found", 404);
     }
+    if (!show) {
+      throw new AppError("Show not found", 404);
+    }
+
+    booking.seats.forEach((bookingSeat) => {
+      const seatObject = show.seats.id(bookingSeat.seatId);
+
+      if (seatObject) {
+        seatObject.status = SEAT_STATUS.AVAILABLE;
+      }
+    });
+
+    const seatsCount = booking.seats.length;
+    show.availableSeats += seatsCount;
+    show.occupiedSeats -= seatsCount;
     await UserRepository.saveWithSession(movie, session);
     await UserRepository.saveWithSession(user, session);
+    return {
+      cancelledSeats: booking.seats.map((s) => s.seatNumber),
+      refundAmount: booking.totalPrice,
+    };
   }
 
   async makeFreshAccessToken(refreshToken) {

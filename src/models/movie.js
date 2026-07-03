@@ -1,4 +1,85 @@
 const mongoose = require("mongoose");
+const { SEAT_TYPES, SEAT_STATUS } = require("../Constants");
+
+const seatSchema = new mongoose.Schema(
+  {
+    seatNumber: {
+      type: String,
+      required: true,
+    },
+    row: {
+      type: String,
+      required: true,
+    },
+    column: {
+      type: Number,
+      required: true,
+    },
+    seatType: {
+      type: String,
+      enum: Object.values(SEAT_TYPES),
+      default: SEAT_TYPES.STANDARD,
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: Object.values(SEAT_STATUS),
+      default: SEAT_STATUS.AVAILABLE,
+      required: true,
+    },
+    priceMultiplier: {
+      type: Number,
+      default: 1.0,
+      required: true,
+    },
+  },
+  { _id: true },
+);
+
+const showSchema = new mongoose.Schema({
+  showTime: {
+    type: String, // "23:00"
+    required: true,
+  },
+  date: {
+    type: String, // "2026-06-25"
+    required: true,
+  },
+  totalSeats: {
+    type: Number,
+    required: true,
+  },
+  screen: {
+    type: String,
+    required: true,
+  },
+  layout: {
+    rows: {
+      type: Number,
+      required: true,
+      min: [1, "At least 1 row required"],
+    },
+    columns: {
+      type: Number,
+      required: true,
+      min: [1, "At least 1 column required"],
+    },
+  },
+  seats: [seatSchema],
+  availableSeats: {
+    type: Number,
+    required: true,
+    min: [0, "Available seats cannot be negative"],
+  },
+  occupiedSeats: {
+    type: Number,
+    default: 0,
+  },
+  lockedSeats: {
+    type: Number,
+    default: 0,
+  },
+});
 
 const movieSchema = new mongoose.Schema(
   {
@@ -22,6 +103,8 @@ const movieSchema = new mongoose.Schema(
     rating: {
       type: Number,
       default: 0,
+      min: [0, "Rating cannot be less than 0"],
+      max: [10, "Rating cannot be more than 10"],
     },
     price: {
       type: Number,
@@ -32,31 +115,7 @@ const movieSchema = new mongoose.Schema(
       ref: "Admin",
       required: true,
     },
-    shows: [
-      {
-        showTime: {
-          type: String, // "23:00"
-          required: true,
-        },
-        date: {
-          type: String, // "2026-06-25"
-          required: true,
-        },
-        totalSeats: {
-          type: Number,
-          required: true,
-          min: [1, "Total seats must be at least 1"],
-        },
-        availableSeats: {
-          type: Number,
-          required: true,
-          min: [0, "Available seats cannot be negative"],
-        },
-        screen: {
-          type: String,
-        },
-      },
-    ],
+    shows: [showSchema],
   },
   { timestamps: true },
 );

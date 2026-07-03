@@ -1,9 +1,6 @@
-const User = require("../models/user");
 const UserDomain = require("../services/user-domain");
 const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
-const jwt = require("jsonwebtoken");
-const { generateAccessToken } = require("../utils/generateToken");
 
 async function registerUser(req, res) {
   try {
@@ -123,9 +120,12 @@ async function cancelBooking(req, res) {
     const user = await UserDomain.cancelBooking(bookingId, session, userId);
 
     await session.commitTransaction();
+    const { cancelledSeats, refundAmount } = user;
     res.json({
       success: true,
       message: "Booking cancelled",
+      cancelledSeats,
+      refundAmount,
     });
   } catch (err) {
     await session.abortTransaction();

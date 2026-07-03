@@ -1,12 +1,12 @@
 FROM node:22-alpine
 
-RUN mkdir /app
+WORKDIR /app
 
-COPY package*.json ./app/
-COPY . ./app/
-RUN cd /app && npm install
+COPY package*.json ./
+RUN npm ci --only=production
 
+COPY . .
 
+EXPOSE 3000
 
-
-CMD ["node", "/app/app.js"]
+CMD ["node", "server.js"]

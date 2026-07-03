@@ -1,5 +1,3 @@
-const Movie = require("../models/movie");
-const Admin = require("../models/admin");
 const MovieDomain = require("../services/movie-domain");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
@@ -106,13 +104,16 @@ async function createBooking(req, res) {
     );
     await session.commitTransaction();
 
+    const { bookingSeats, totalPrice } = ticket;
+
     res.status(201).json({
       message: "Show Booked successfully",
       success: true,
       booking: {
         movieId,
         showId,
-        seats: seats,
+        seats: bookingSeats,
+        totalPrice,
         status: BOOKING_STATUS.CONFIRMED,
       },
     });
