@@ -20,6 +20,14 @@ router.post("/register", validate(registerAdminSchema), registerAdmin);
 
 router.post("/login", validate(loginAdminSchema), loginAdmin);
 
+router.get("/auth-me", isLoggedIn, isAdmin, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Authenticated",
+    user: req.user,
+  });
+});
+
 router.delete("/delete", isLoggedIn, isAdmin, deleteAdmin);
 
 router.get("/listed-movies", isLoggedIn, isAdmin, checkListedMovies);
