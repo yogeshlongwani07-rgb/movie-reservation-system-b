@@ -123,9 +123,12 @@ async function cancelBooking(req, res) {
     const user = await UserDomain.cancelBooking(bookingId, session, userId);
 
     await session.commitTransaction();
+    const { cancelledSeats, refundAmount } = user;
     res.json({
       success: true,
       message: "Booking cancelled",
+      cancelledSeats,
+      refundAmount,
     });
   } catch (err) {
     await session.abortTransaction();
