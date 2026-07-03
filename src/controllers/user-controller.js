@@ -1,9 +1,6 @@
-const User = require("../models/user");
 const UserDomain = require("../services/user-domain");
 const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
-const jwt = require("jsonwebtoken");
-const { generateAccessToken } = require("../utils/generateToken");
 
 async function registerUser(req, res) {
   try {

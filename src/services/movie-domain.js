@@ -1,4 +1,3 @@
-const Movie = require("../models/movie");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const MovieRepository = require("../repositories/movie.repository");

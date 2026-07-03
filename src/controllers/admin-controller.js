@@ -1,10 +1,6 @@
-const Admin = require("../models/admin");
-const Movie = require("../models/movie");
 const AdminDomain = require("../services/admin-domain");
 const AppError = require("../utils/appError");
-const jwt = require("jsonwebtoken");
-const { generateAccessToken } = require("../utils/generateToken");
-const { default: mongoose } = require("mongoose");
+const { mongoose } = require("mongoose");
 
 async function registerAdmin(req, res) {
   try {
