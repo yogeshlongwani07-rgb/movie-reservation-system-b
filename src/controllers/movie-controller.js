@@ -3,6 +3,7 @@ const Admin = require("../models/admin");
 const MovieDomain = require("../services/movie-domain");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
+const { BOOKING_STATUS } = require("../Constants");
 
 async function createMovie(req, res) {
   try {
@@ -10,6 +11,11 @@ async function createMovie(req, res) {
     await MovieDomain.pushMovieToAdmin(req.user._id, listing._id);
     res.status(201).json({ message: "Movie added", success: true });
   } catch (err) {
+    if (err instanceof AppError) {
+      return res
+        .status(err.statusCode)
+        .json({ message: err.message, success: false });
+    }
     console.log("error", err);
     res.status(500).json({ message: "Unexpected Error", success: false });
   }
@@ -107,7 +113,7 @@ async function createBooking(req, res) {
         movieId,
         showId,
         seats: seats,
-        status: "Confirmed",
+        status: BOOKING_STATUS.CONFIRMED,
       },
     });
   } catch (err) {

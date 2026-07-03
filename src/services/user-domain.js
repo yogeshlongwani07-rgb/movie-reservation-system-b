@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
 const UserRepository = require("../repositories/user.repository");
+const { BOOKING_STATUS } = require("../Constants");
 
 const {
   generateAccessToken,
@@ -71,10 +72,10 @@ class UserDomain {
     if (bookingIndex === -1) {
       throw new AppError("Booking not Found", 404);
     }
-    if (user.bookings[bookingIndex].status === "Cancelled") {
+    if (user.bookings[bookingIndex].status === BOOKING_STATUS.CANCELLED) {
       throw new AppError("Booking is already cancelled", 404);
     }
-    user.bookings[bookingIndex].status = "Cancelled";
+    user.bookings[bookingIndex].status = BOOKING_STATUS.CANCELLED;
 
     const movieID = user.bookings[bookingIndex].movie.toString();
     const movie = await UserRepository.findByIdWithSessionAndMovie(

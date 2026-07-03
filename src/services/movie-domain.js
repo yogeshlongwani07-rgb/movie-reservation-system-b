@@ -2,6 +2,7 @@ const Movie = require("../models/movie");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const MovieRepository = require("../repositories/movie.repository");
+const { BOOKING_STATUS } = require("../Constants");
 
 class MovieDomain {
   async create(body, userId) {
@@ -83,7 +84,7 @@ class MovieDomain {
 
     user.bookings.push({
       movie: movieId,
-      status: "Confirmed",
+      status: BOOKING_STATUS.CONFIRMED,
       seats: seats,
       showId: showId,
     });

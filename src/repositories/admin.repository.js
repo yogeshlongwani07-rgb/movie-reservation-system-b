@@ -11,13 +11,17 @@ class AdminRepository {
   async save(newAdmin) {
     return await newAdmin.save();
   }
-  async deleteAdminMovies(id) {
+  async deleteAdminMovieswithSession(id, session) {
     return await Movie.deleteMany({
       createdBy: id,
-    });
+    }).session(session);
   }
   async findByIdAndDelete(id) {
     return await Admin.findByIdAndDelete(id);
+  }
+
+  async findByIdAndDeleteWithSession(id, session) {
+    return await Admin.findByIdAndDelete(id).session(session);
   }
   async findById(id) {
     return await Admin.findById(id);
