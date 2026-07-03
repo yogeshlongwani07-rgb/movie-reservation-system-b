@@ -2,7 +2,11 @@ const Joi = require("joi");
 const showSchema = Joi.object({
   showTime: Joi.string().required(),
   date: Joi.string().required(), // later change to date()
-  totalSeats: Joi.number().integer().min(1).required(),
+  layout: Joi.object({
+    rows: Joi.number().integer().min(1).required(),
+    columns: Joi.number().integer().min(1).required(),
+  }).required(),
+  totalSeats: Joi.number().integer().min(0).required(),
   availableSeats: Joi.number().integer().min(0).required(),
   screen: Joi.string().optional(),
 });

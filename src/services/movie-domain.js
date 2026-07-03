@@ -3,11 +3,35 @@ const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const MovieRepository = require("../repositories/movie.repository");
 const { BOOKING_STATUS } = require("../Constants");
+const { generateSeats } = require("../utils/seatGenerator");
 
 class MovieDomain {
   async create(body, userId) {
-    const listing = await MovieRepository.create({
+    if (!body.shows || !Array.isArray(body.shows)) {
+      throw new AppError("Atleast one Show required in correct format");
+    }
+
+    const newBody = {
       ...body,
+      shows: body.shows?.map((show) => {
+        const seats = generateSeats(
+          show.layout?.rows || 10,
+          show.layout?.columns || 15,
+        );
+
+        return {
+          ...show,
+          seats,
+          totalSeats: seats.length,
+          availableSeats: seats.length,
+          occupiedSeats: 0,
+          lockedSeats: 0,
+        };
+      }),
+    };
+
+    const listing = await MovieRepository.create({
+      ...newBody,
       createdBy: userId,
     });
     return listing;
