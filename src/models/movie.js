@@ -1,6 +1,5 @@
-const { required, string } = require("joi");
 const mongoose = require("mongoose");
-const { SEAT_TYPES, SEAT_STATUS, SEAT_PRICING } = require("../Constants");
+const { SEAT_TYPES, SEAT_STATUS } = require("../Constants");
 
 const seatSchema = new mongoose.Schema(
   {

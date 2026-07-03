@@ -1,5 +1,3 @@
-const Movie = require("../models/movie");
-const Admin = require("../models/admin");
 const MovieDomain = require("../services/movie-domain");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
