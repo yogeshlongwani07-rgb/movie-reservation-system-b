@@ -95,7 +95,6 @@ class MovieDomain {
     if (!show) {
       throw new AppError("Show not Found", 404);
     }
-    console.log(seats);
     if (show.availableSeats < seats.length) {
       throw new AppError("Not enough seats available", 400);
     }

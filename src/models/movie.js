@@ -49,7 +49,6 @@ const showSchema = new mongoose.Schema({
   totalSeats: {
     type: Number,
     required: true,
-    min: [1, "Total seats must be at least 1"],
   },
   screen: {
     type: String,
