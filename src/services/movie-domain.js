@@ -2,8 +2,8 @@ const Movie = require("../models/movie");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const MovieRepository = require("../repositories/movie.repository");
-const { BOOKING_STATUS } = require("../Constants");
-const { generateSeats } = require("../utils/seatGenerator");
+const { BOOKING_STATUS, SEAT_STATUS } = require("../Constants");
+const { generateSeats, getSeatsByNumbers } = require("../utils/seatGenerator");
 
 class MovieDomain {
   async create(body, userId) {
@@ -98,6 +98,40 @@ class MovieDomain {
     if (show.availableSeats < seats.length) {
       throw new AppError("Not enough seats available", 400);
     }
+
+    const seatToBook = getSeatsByNumbers(show, seats);
+
+    if (seatToBook.length !== seats.length) {
+      throw new AppError("Some seats not found", 404);
+    }
+
+    const unavailableSeats = seatToBook.filter(
+      (s) => s.status !== SEAT_STATUS.AVAILABLE,
+    );
+    if (unavailableSeats.length > 0) {
+      throw new AppError(
+        `Seats ${unavailableSeats.map((s) => s.seatNumber).join(", ")} are not available`,
+        400,
+      );
+    }
+
+    let totalPrice = 0;
+    const basePrice = movie.price;
+    let bookingSeats = [];
+
+    seatToBook.forEach((seat) => {
+      const seatPrice = basePrice * seat.priceMultiplier;
+      totalPrice += seatPrice;
+      seat.status = SEAT_STATUS.BOOKED;
+
+      bookingSeats.push({
+        seatId: seat._id,
+        seatNumber: seat.seatNumber,
+        seatType: seat.seatType,
+        price: seatPrice,
+      });
+    });
+
     const user = await MovieRepository.findByIdWithSessionAndUser(
       userId,
       session,
@@ -106,21 +140,23 @@ class MovieDomain {
       throw new AppError("User not Found", 404);
     }
 
-    const totalPrice = seats.reduce((sum, seat) => {
-      return sum + seat.price;
-    }, 0);
-
     user.bookings.push({
       movie: movieId,
       status: BOOKING_STATUS.CONFIRMED,
-      seats: seats,
+      seats: bookingSeats,
       showId: showId,
       totalPrice,
     });
 
     show.availableSeats -= seats.length;
+    show.occupiedSeats += seatToBook.length;
+
     await MovieRepository.saveWithSession(user, session);
     await MovieRepository.saveWithSession(movie, session);
+    return {
+      bookingSeats: bookingSeats,
+      totalPrice: totalPrice,
+    };
   }
 }
 

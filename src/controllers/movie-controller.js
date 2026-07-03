@@ -106,13 +106,16 @@ async function createBooking(req, res) {
     );
     await session.commitTransaction();
 
+    const { bookingSeats, totalPrice } = ticket;
+
     res.status(201).json({
       message: "Show Booked successfully",
       success: true,
       booking: {
         movieId,
         showId,
-        seats: seats,
+        seats: bookingSeats,
+        totalPrice,
         status: BOOKING_STATUS.CONFIRMED,
       },
     });
