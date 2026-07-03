@@ -54,14 +54,17 @@ class AdminDomain {
     return { accessToken, refreshToken };
   }
 
-  async deleteAdmin(id) {
-    const admin = await AdminRepository.findByIdAndDelete(id);
+  async deleteAdmin(id, session) {
+    const admin = await AdminRepository.findByIdAndDeleteWithSession(
+      id,
+      session,
+    );
 
     if (!admin) {
       throw new AppError("Admin not found", 404);
     }
 
-    await AdminRepository.deleteAdminMovies(id);
+    await AdminRepository.deleteAdminMovieswithSession(id, session);
   }
 
   async showAdminMovies(adminId) {

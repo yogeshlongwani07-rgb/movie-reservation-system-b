@@ -1,10 +1,6 @@
-const Admin = require("../models/admin");
-const Movie = require("../models/movie");
 const AdminDomain = require("../services/admin-domain");
 const AppError = require("../utils/appError");
-const jwt = require("jsonwebtoken");
-const { generateAccessToken } = require("../utils/generateToken");
-const { default: mongoose } = require("mongoose");
+const { mongoose } = require("mongoose");
 
 async function registerAdmin(req, res) {
   try {
@@ -82,7 +78,7 @@ async function deleteAdmin(req, res) {
   try {
     await session.startTransaction();
     let id = req.user._id;
-    const admin = await AdminDomain.deleteAdmin(id);
+    const admin = await AdminDomain.deleteAdmin(id, session);
 
     await session.commitTransaction();
     res.json({

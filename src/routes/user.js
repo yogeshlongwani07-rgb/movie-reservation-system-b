@@ -18,6 +18,15 @@ const {
 
 router.post("/register", validate(registerUserSchema), registerUser);
 router.post("/login", validate(loginUserSchema), loginUser);
+
+router.get("/auth-me", isLoggedIn, isUser, (req, res) => {
+  res.status(200).json({
+    success: true,
+    message: "Authenticated",
+    user: req.user,
+  });
+});
+
 router.delete("/delete", isLoggedIn, deleteUser);
 router.get("/my-bookings", isLoggedIn, isUser, checkMyBookings);
 router.post(
@@ -30,7 +39,8 @@ router.post(
 router.post("/refresh-token", refreshAccessToken);
 
 router.post("/logout", (req, res) => {
-  res.clearCookie("token");
+  res.clearCookie("accessToken");
+  res.clearCookie("refreshToken");
   res.json({
     success: true,
     message: "Logged out",
