@@ -86,7 +86,7 @@ class MovieDomain {
     const shows = await MovieRepository.checkMovieByDate(date);
     return shows;
   }
-  async bookTickets(movieId, showId, seats, userId, session, totalPrice) {
+  async bookTickets(movieId, showId, seats, userId, session) {
     const movie = await MovieRepository.findByIdWithSession(movieId, session);
     if (!movie) {
       throw new AppError("Movie not Found", 404);
@@ -106,6 +106,10 @@ class MovieDomain {
     if (!user) {
       throw new AppError("User not Found", 404);
     }
+
+    const totalPrice = seats.reduce((sum, seat) => {
+      return sum + seat.price;
+    }, 0);
 
     user.bookings.push({
       movie: movieId,
