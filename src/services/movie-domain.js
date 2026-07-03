@@ -86,7 +86,7 @@ class MovieDomain {
     const shows = await MovieRepository.checkMovieByDate(date);
     return shows;
   }
-  async bookTickets(movieId, showId, seats, userId, session) {
+  async bookTickets(movieId, showId, seats, userId, session, totalPrice) {
     const movie = await MovieRepository.findByIdWithSession(movieId, session);
     if (!movie) {
       throw new AppError("Movie not Found", 404);
@@ -95,7 +95,8 @@ class MovieDomain {
     if (!show) {
       throw new AppError("Show not Found", 404);
     }
-    if (show.availableSeats < seats) {
+    console.log(seats);
+    if (show.availableSeats < seats.length) {
       throw new AppError("Not enough seats available", 400);
     }
     const user = await MovieRepository.findByIdWithSessionAndUser(
@@ -111,9 +112,10 @@ class MovieDomain {
       status: BOOKING_STATUS.CONFIRMED,
       seats: seats,
       showId: showId,
+      totalPrice,
     });
 
-    show.availableSeats -= seats;
+    show.availableSeats -= seats.length;
     await MovieRepository.saveWithSession(user, session);
     await MovieRepository.saveWithSession(movie, session);
   }

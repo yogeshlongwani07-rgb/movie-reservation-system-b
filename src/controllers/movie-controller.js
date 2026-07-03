@@ -96,13 +96,14 @@ async function createBooking(req, res) {
   try {
     session.startTransaction();
 
-    const { movieId, showId, seats } = req.body;
+    const { movieId, showId, seats, totalPrice } = req.body;
     const ticket = await MovieDomain.bookTickets(
       movieId,
       showId,
       seats,
       req.user._id,
       session,
+      totalPrice,
     );
     await session.commitTransaction();
 

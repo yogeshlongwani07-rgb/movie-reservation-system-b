@@ -34,7 +34,18 @@ const updateMovieSchema = Joi.object({
 const bookShowSchema = Joi.object({
   movieId: Joi.string().hex().length(24).required(),
   showId: Joi.string().hex().length(24).required(),
-  seats: Joi.number().integer().min(1).max(10).required(),
+  totalPrice: Joi.number(),
+  seats: Joi.array()
+    .items(
+      Joi.object({
+        seatId: Joi.string().hex().length(24).required(),
+        seatNumber: Joi.string().required(),
+        seatType: Joi.string().required(),
+        price: Joi.number().positive().required(),
+      }),
+    )
+    .min(1)
+    .required(),
 });
 
 const movieIdParamsSchema = Joi.object({
