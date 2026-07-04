@@ -41,6 +41,11 @@ const movieIdParamsSchema = Joi.object({
   id: Joi.string().hex().length(24).required(),
 });
 
+const movieIdWithShowIdParamsSchema = Joi.object({
+  id: Joi.string().hex().length(24).required(),
+  showId: Joi.string().hex().length(24).required(),
+});
+
 const dateQuerySchema = Joi.object({
   date: Joi.string().required(),
 });
@@ -51,4 +56,5 @@ module.exports = {
   bookShowSchema,
   movieIdParamsSchema,
   dateQuerySchema,
+  movieIdWithShowIdParamsSchema,
 };

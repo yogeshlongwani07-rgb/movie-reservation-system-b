@@ -7,6 +7,7 @@ const {
   bookShowSchema,
   movieIdParamsSchema,
   dateQuerySchema,
+  movieIdWithShowIdParamsSchema,
 } = require("../validations/movie.validation");
 const validate = require("../middleware/validate");
 const {
@@ -14,8 +15,10 @@ const {
   getAllMovies,
   updateMovie,
   deleteMovie,
-  getAvailableShows,
+  movieByDate,
   createBooking,
+  checkMovieShows,
+  checkMovieShow,
 } = require("../controllers/movie-controller");
 
 //Movies CRUD
@@ -49,7 +52,23 @@ router.get(
   "/available-shows",
   isLoggedIn,
   validate(dateQuerySchema, "query"),
-  getAvailableShows,
+  movieByDate,
+);
+
+router.get(
+  "/shows/:id",
+  isLoggedIn,
+  isUser,
+  validate(movieIdParamsSchema, "params"),
+  checkMovieShows,
+);
+
+router.get(
+  "/:id/show/:showId",
+  isLoggedIn,
+  isUser,
+  validate(movieIdWithShowIdParamsSchema, "params"),
+  checkMovieShow,
 );
 
 router.post(

@@ -157,6 +157,19 @@ class MovieDomain {
       totalPrice: totalPrice,
     };
   }
+
+  async checkShows(id) {
+    const movie = await MovieRepository.findById(id);
+
+    return movie.shows;
+  }
+  async checkShow(id, showId) {
+    const movie = await MovieRepository.findById(id);
+    const show = movie.shows.filter((show) => {
+      return show._id.toString() === showId;
+    });
+    return show;
+  }
 }
 
 module.exports = new MovieDomain();

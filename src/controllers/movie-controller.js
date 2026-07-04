@@ -73,7 +73,7 @@ async function deleteMovie(req, res) {
   }
 }
 
-async function getAvailableShows(req, res) {
+async function movieByDate(req, res) {
   try {
     const { date } = req.query;
     const shows = await MovieDomain.checkMovieByDate(date);
@@ -132,11 +132,38 @@ async function createBooking(req, res) {
   }
 }
 
+async function checkMovieShows(req, res) {
+  try {
+    const movieId = req.params.id;
+
+    const movie = await MovieDomain.checkShows(movieId);
+    res.status(200).json({ message: "Success", success: true, shows: movie });
+  } catch (err) {
+    console.log("error", err);
+    res.status(500).json({ message: "Unexpected Error", success: false });
+  }
+}
+
+async function checkMovieShow(req, res) {
+  const movieId = req.params.id;
+  const showId = req.params.showId;
+  try {
+    const movie = await MovieDomain.checkShow(movieId, showId);
+    console.log(movie);
+    res.status(200).json({ message: "Success", success: true, show: movie });
+  } catch (err) {
+    console.log("error", err);
+    res.status(500).json({ message: "Unexpected Error", success: false });
+  }
+}
+
 module.exports = {
   createMovie,
   getAllMovies,
   updateMovie,
   deleteMovie,
-  getAvailableShows,
+  movieByDate,
   createBooking,
+  checkMovieShows,
+  checkMovieShow,
 };
