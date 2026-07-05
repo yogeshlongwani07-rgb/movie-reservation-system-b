@@ -3,6 +3,7 @@ const mongoose = require("mongoose");
 const MovieRepository = require("../repositories/movie.repository");
 const { BOOKING_STATUS, SEAT_STATUS } = require("../Constants");
 const { generateSeats, getSeatsByNumbers } = require("../utils/seatGenerator");
+const { releaseExpiredLocks } = require("../utils/releaseExpiredLocks");
 
 class MovieDomain {
   async create(body, userId) {
@@ -150,14 +151,17 @@ class MovieDomain {
 
   async checkShows(id) {
     const movie = await MovieRepository.findById(id);
-
+    for (const show of movie.shows) {
+      await releaseExpiredLocks(show);
+    }
+    await MovieRepository.save(movie);
     return movie.shows;
   }
   async checkShow(id, showId) {
     const movie = await MovieRepository.findById(id);
-    const show = movie.shows.filter((show) => {
-      return show._id.toString() === showId;
-    });
+    const show = movie.shows.find((s) => s._id.toString() === showId);
+    await releaseExpiredLocks(show);
+    await MovieRepository.save(movie);
     return show;
   }
 
@@ -170,6 +174,7 @@ class MovieDomain {
     if (!show) {
       throw new AppError("Show not Found", 404);
     }
+    await releaseExpiredLocks(show);
     if (show.availableSeats < seats.length) {
       throw new AppError("Not enough seats available", 400);
     }
@@ -180,19 +185,26 @@ class MovieDomain {
       throw new AppError("Some seats not found", 404);
     }
 
-    const unavailableSeats = seatToBook.filter(
-      (s) => s.status !== SEAT_STATUS.AVAILABLE,
-    );
+    const unavailableSeats = seatToBook.filter((s) => {
+      if (s.status === SEAT_STATUS.AVAILABLE) {
+        return false;
+      }
+
+      if (s.status === SEAT_STATUS.LOCKED && s.lockedBy?.equals(userId)) {
+        return false;
+      }
+
+      return true;
+    });
     if (unavailableSeats.length > 0) {
       throw new AppError(
         `Seats ${unavailableSeats.map((s) => s.seatNumber).join(", ")} are not available`,
         400,
       );
     }
-
     let totalPrice = 0;
     const basePrice = movie.price;
-    let bookingSeats = [];
+    const bookingSeats = [];
 
     seatToBook.forEach((seat) => {
       const seatPrice = basePrice * seat.priceMultiplier;
@@ -217,16 +229,27 @@ class MovieDomain {
       throw new AppError("User not Found", 404);
     }
 
+    const existingHold = user.bookings.find(
+      (booking) =>
+        booking.showId.toString() === showId.toString() &&
+        booking.status === BOOKING_STATUS.HOLD,
+    );
+
+    if (existingHold) {
+      throw new AppError("You already have an active hold for this show.", 400);
+    }
+
     user.bookings.push({
       movie: movieId,
-      status: BOOKING_STATUS.CONFIRMED,
+      status: BOOKING_STATUS.HOLD,
       seats: bookingSeats,
       showId: showId,
       totalPrice,
     });
 
     show.availableSeats -= seats.length;
-    show.occupiedSeats += seatToBook.length;
+    show.lockedSeats += seatToBook.length;
+    // show.occupiedSeats += seatToBook.length; after payment or book task
 
     await MovieRepository.saveWithSession(user, session);
     await MovieRepository.saveWithSession(movie, session);
@@ -234,6 +257,9 @@ class MovieDomain {
       bookingSeats: bookingSeats,
       totalPrice: totalPrice,
     };
+
+    //     show.lockedSeats -= seats.length;
+    // show.occupiedSeats += seats.length; after payment or book task
     //check seats
     //lock seats
     //locked by
