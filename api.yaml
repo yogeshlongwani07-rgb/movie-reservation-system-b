@@ -26,12 +26,12 @@ paths:
       tags: [Health]
       summary: Health check
       responses:
-        '200':
+        "200":
           description: Service is running
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponse'
+                $ref: "#/components/schemas/HealthResponse"
 
   /admin/register:
     post:
@@ -42,7 +42,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdminRegisterRequest'
+              $ref: "#/components/schemas/AdminRegisterRequest"
             examples:
               default:
                 value:
@@ -51,30 +51,30 @@ paths:
                   password: secret123
                   role: admin
       responses:
-        '201':
+        "201":
           description: Admin created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthSuccessResponse'
-        '400':
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "400":
           description: Invalid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Unauthorized admin creation attempt
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
           description: Email already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /admin/login:
     post:
@@ -85,37 +85,37 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
             examples:
               default:
                 value:
                   email: admin@example.com
                   password: secret123
       responses:
-        '200':
+        "200":
           description: Login successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthSuccessResponse'
-        '400':
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "400":
           description: Invalid credentials or missing fields
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /admin/logout:
     post:
       tags: [Admin]
       summary: Logout admin
       responses:
-        '200':
+        "200":
           description: Logged out
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LogoutResponse'
+                $ref: "#/components/schemas/LogoutResponse"
 
   /admin/delete:
     delete:
@@ -124,24 +124,24 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Admin deleted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '401':
+                $ref: "#/components/schemas/MessageResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /admin/listed-movies:
     get:
@@ -150,7 +150,7 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: List of movies
           content:
             application/json:
@@ -160,19 +160,19 @@ paths:
                   movies:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Movie'
-        '401':
+                      $ref: "#/components/schemas/Movie"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /user/register:
     post:
@@ -183,7 +183,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRegisterRequest'
+              $ref: "#/components/schemas/UserRegisterRequest"
             examples:
               default:
                 value:
@@ -191,24 +191,24 @@ paths:
                   email: user@example.com
                   password: secret123
       responses:
-        '201':
+        "201":
           description: User created
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthSuccessResponse'
-        '400':
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "400":
           description: Invalid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '409':
+                $ref: "#/components/schemas/ErrorResponse"
+        "409":
           description: Email already exists
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /user/login:
     post:
@@ -219,38 +219,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
       responses:
-        '200':
+        "200":
           description: Login successful
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AuthSuccessResponse'
-        '400':
+                $ref: "#/components/schemas/AuthSuccessResponse"
+        "400":
           description: Invalid credentials or missing fields
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Unauthorized admin-role attempt
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /user/logout:
     post:
       tags: [User]
       summary: Logout user
       responses:
-        '200':
+        "200":
           description: Logged out
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/LogoutResponse'
+                $ref: "#/components/schemas/LogoutResponse"
 
   /user/delete:
     delete:
@@ -259,18 +259,18 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: User deleted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '401':
+                $ref: "#/components/schemas/MessageResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /user/my-bookings:
     get:
@@ -279,7 +279,7 @@ paths:
       security:
         - cookieAuth: []
       responses:
-        '200':
+        "200":
           description: Booking list
           content:
             application/json:
@@ -289,19 +289,19 @@ paths:
                   bookings:
                     type: array
                     items:
-                      $ref: '#/components/schemas/Booking'
-        '401':
+                      $ref: "#/components/schemas/Booking"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /user/cancel-booking/{bookingId}:
     post:
@@ -317,50 +317,50 @@ paths:
             type: string
           description: Booking document id
       responses:
-        '200':
+        "200":
           description: Booking cancelled
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '400':
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
           description: Booking already cancelled or invalid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /movie:
     get:
       tags: [Movie]
       summary: Get all movies
       responses:
-        '200':
+        "200":
           description: Movie list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Movie'
-        '400':
+                  $ref: "#/components/schemas/Movie"
+        "400":
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /movie/add:
     post:
@@ -373,7 +373,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MovieCreateRequest'
+              $ref: "#/components/schemas/MovieCreateRequest"
             examples:
               default:
                 value:
@@ -390,30 +390,30 @@ paths:
                       availableSeats: 100
                       screen: Screen 1
       responses:
-        '201':
+        "201":
           description: Movie added
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '400':
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
           description: Validation or creation error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /movie/edit/{id}:
     put:
@@ -432,38 +432,38 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/MovieUpdateRequest'
+              $ref: "#/components/schemas/MovieUpdateRequest"
       responses:
-        '200':
+        "200":
           description: Movie updated
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '400':
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
           description: Invalid request or unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Movie not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /movie/delete/{id}:
     delete:
@@ -478,30 +478,30 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Movie deleted
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '401':
+                $ref: "#/components/schemas/MessageResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Movie not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /movie/shows:
     get:
@@ -517,20 +517,20 @@ paths:
             type: string
             example: "2026-06-25"
       responses:
-        '200':
+        "200":
           description: Available shows
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AvailableShow'
-        '500':
+                  $ref: "#/components/schemas/AvailableShow"
+        "500":
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /movie/bookings:
     post:
@@ -543,7 +543,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/BookShowRequest'
+              $ref: "#/components/schemas/BookShowRequest"
             examples:
               default:
                 value:
@@ -551,36 +551,36 @@ paths:
                   showId: 66b222222222222222222222
                   seats: 2
       responses:
-        '200':
+        "200":
           description: Show booked
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/MessageResponse'
-        '400':
+                $ref: "#/components/schemas/MessageResponse"
+        "400":
           description: Invalid request or insufficient seats
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '401':
+                $ref: "#/components/schemas/ErrorResponse"
+        "401":
           description: Unauthorized
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '403':
+                $ref: "#/components/schemas/ErrorResponse"
+        "403":
           description: Forbidden
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
-        '404':
+                $ref: "#/components/schemas/ErrorResponse"
+        "404":
           description: Movie, show, or user not found
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
   /movie/owner/{id}:
     get:
@@ -593,7 +593,7 @@ paths:
           schema:
             type: string
       responses:
-        '200':
+        "200":
           description: Movie owner
           content:
             application/json:
@@ -601,13 +601,13 @@ paths:
                 type: object
                 properties:
                   owner:
-                    $ref: '#/components/schemas/AdminPublic'
-        '500':
+                    $ref: "#/components/schemas/AdminPublic"
+        "500":
           description: Unexpected error
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
 
 components:
   securitySchemes:
@@ -738,7 +738,7 @@ components:
         shows:
           type: array
           items:
-            $ref: '#/components/schemas/ShowInput'
+            $ref: "#/components/schemas/ShowInput"
 
     MovieUpdateRequest:
       type: object
@@ -758,7 +758,7 @@ components:
         shows:
           type: array
           items:
-            $ref: '#/components/schemas/ShowInput'
+            $ref: "#/components/schemas/ShowInput"
 
     ShowInput:
       type: object
@@ -797,11 +797,11 @@ components:
         createdBy:
           oneOf:
             - type: string
-            - $ref: '#/components/schemas/AdminPublic'
+            - $ref: "#/components/schemas/AdminPublic"
         shows:
           type: array
           items:
-            $ref: '#/components/schemas/Show'
+            $ref: "#/components/schemas/Show"
         createdAt:
           type: string
           format: date-time
@@ -839,7 +839,7 @@ components:
         rating:
           type: number
         shows:
-          $ref: '#/components/schemas/Show'
+          $ref: "#/components/schemas/Show"
 
     Booking:
       type: object
@@ -849,7 +849,7 @@ components:
         movie:
           oneOf:
             - type: string
-            - $ref: '#/components/schemas/Movie'
+            - $ref: "#/components/schemas/Movie"
         seats:
           type: integer
         showId:
