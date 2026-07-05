@@ -2,8 +2,7 @@ const Movie = require("../models/movie");
 const User = require("../models/user");
 const { BOOKING_STATUS } = require("../Constants");
 const { releaseExpiredLocks } = require("../utils/releaseExpiredLocks");
-
-const DEFAULT_CLEANUP_INTERVAL_MS = 60 * 1000;
+const { DEFAULT_CLEANUP_INTERVAL_MS } = require("../Constants");
 
 async function cleanupExpiredHolds() {
   const now = new Date();

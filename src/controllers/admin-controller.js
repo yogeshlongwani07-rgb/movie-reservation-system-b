@@ -1,6 +1,7 @@
 const AdminDomain = require("../services/admin-domain");
 const AppError = require("../utils/appError");
 const { mongoose } = require("mongoose");
+const { FIFTEEN_MINUTES_MS, SEVEN_DAYS_MS } = require("../Constants");
 
 async function registerAdmin(req, res) {
   try {
@@ -18,13 +19,13 @@ async function registerAdmin(req, res) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
+      maxAge: FIFTEEN_MINUTES_MS,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: SEVEN_DAYS_MS,
     });
     res.status(201).json({ message: "Account Created", success: true });
   } catch (err) {
@@ -50,13 +51,13 @@ async function loginAdmin(req, res) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000,
+      maxAge: FIFTEEN_MINUTES_MS,
     });
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      maxAge: SEVEN_DAYS_MS,
     });
     res.status(200).json({ message: "Your are Login!", success: true });
   } catch (err) {
@@ -129,7 +130,7 @@ async function refreshAccessToken(req, res) {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
-      maxAge: 15 * 60 * 1000, // 15 minutes
+      maxAge: FIFTEEN_MINUTES_MS, // 15 minutes
     });
 
     return res.status(200).json({
