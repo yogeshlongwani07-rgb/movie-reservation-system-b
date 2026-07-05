@@ -2,6 +2,7 @@ const MovieDomain = require("../services/movie-domain");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const { BOOKING_STATUS } = require("../Constants");
+const { emitToShow } = require("../socket/socketManager");
 
 async function createMovie(req, res) {
   try {
@@ -183,6 +184,8 @@ async function holdSeats(req, res) {
     );
     await session.commitTransaction();
 
+    emitToShow(movieId, showId, "seat:held", { seats: ticket.bookingSeats });
+
     res.status(200).json({
       message: "Seat held successfully",
       success: true,
@@ -204,8 +207,6 @@ async function holdSeats(req, res) {
   }
 }
 
-
-
 async function bookSeat(req, res) {
   const session = await mongoose.startSession();
 
@@ -222,6 +223,8 @@ async function bookSeat(req, res) {
       session,
     );
     await session.commitTransaction();
+
+    emitToShow(movieId, showId, "seat:booked", { seats: ticket.bookingSeats });
 
     res.status(200).json({
       message: "Seat booked successfully",
