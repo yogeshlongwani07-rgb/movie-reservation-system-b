@@ -149,11 +149,46 @@ async function checkMovieShow(req, res) {
   const showId = req.params.showId;
   try {
     const movie = await MovieDomain.checkShow(movieId, showId);
-    console.log(movie);
     res.status(200).json({ message: "Success", success: true, show: movie });
   } catch (err) {
     console.log("error", err);
     res.status(500).json({ message: "Unexpected Error", success: false });
+  }
+}
+
+async function holdSeats(req, res) {
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    const movieId = req.params.id;
+    const showId = req.params.showId;
+    const seats = req.body.seatNumber;
+    const ank = await MovieDomain.holdSeat(
+      movieId,
+      showId,
+      seats,
+      req.user._id,
+      session,
+    );
+    await session.commitTransaction();
+
+    res
+      .status(200)
+      .json({ message: "Seat held successfully", success: true, seats: ank });
+  } catch (err) {
+    if (err instanceof AppError) {
+      await session.abortTransaction();
+
+      return res
+        .status(err.statusCode)
+        .json({ message: err.message, success: false });
+    }
+    await session.abortTransaction();
+    console.log("error", err);
+    res.status(500).json({ message: "Unexpected Error", success: false });
+  } finally {
+    await session.endSession();
   }
 }
 
@@ -166,4 +201,5 @@ module.exports = {
   createBooking,
   checkMovieShows,
   checkMovieShow,
+  holdSeats,
 };
