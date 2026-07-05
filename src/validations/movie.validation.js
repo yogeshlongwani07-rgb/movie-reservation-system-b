@@ -31,14 +31,27 @@ const updateMovieSchema = Joi.object({
   shows: Joi.array().items(showSchema).optional(),
 }).min(1);
 
+const seatNumbersSchema = Joi.array()
+  .items(Joi.string().trim().required())
+  .min(1)
+  .required();
+
 const bookShowSchema = Joi.object({
   movieId: Joi.string().hex().length(24).required(),
   showId: Joi.string().hex().length(24).required(),
-  seats: Joi.array().items(Joi.string().required()).min(1).required(),
+  seats: seatNumbersSchema,
 });
 
+const holdOrBookSeatsSchema = Joi.object({
+  seatNumber: seatNumbersSchema,
+});
 const movieIdParamsSchema = Joi.object({
   id: Joi.string().hex().length(24).required(),
+});
+
+const movieIdWithShowIdParamsSchema = Joi.object({
+  id: Joi.string().hex().length(24).required(),
+  showId: Joi.string().hex().length(24).required(),
 });
 
 const dateQuerySchema = Joi.object({
@@ -51,4 +64,6 @@ module.exports = {
   bookShowSchema,
   movieIdParamsSchema,
   dateQuerySchema,
+  holdOrBookSeatsSchema,
+  movieIdWithShowIdParamsSchema,
 };

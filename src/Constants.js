@@ -1,6 +1,8 @@
 const BOOKING_STATUS = {
   CONFIRMED: "Confirmed",
   CANCELLED: "Cancelled",
+  HOLD: "Hold",
+  Expired: "Expired",
 };
 
 const SEAT_TYPES = {

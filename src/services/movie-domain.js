@@ -1,8 +1,8 @@
 const AppError = require("../utils/appError");
-const mongoose = require("mongoose");
 const MovieRepository = require("../repositories/movie.repository");
 const { BOOKING_STATUS, SEAT_STATUS } = require("../Constants");
 const { generateSeats, getSeatsByNumbers } = require("../utils/seatGenerator");
+const { releaseExpiredLocks } = require("../utils/releaseExpiredLocks");
 
 class MovieDomain {
   async create(body, userId) {
@@ -86,6 +86,94 @@ class MovieDomain {
     return shows;
   }
   async bookTickets(movieId, showId, seats, userId, session) {
+    // const movie = await MovieRepository.findByIdWithSession(movieId, session);
+    // if (!movie) {
+    //   throw new AppError("Movie not Found", 404);
+    // }
+    // const show = movie.shows.id(showId);
+    // if (!show) {
+    //   throw new AppError("Show not Found", 404);
+    // }
+    // if (show.availableSeats < seats.length) {
+    //   throw new AppError("Not enough seats available", 400);
+    // }
+    // const seatToBook = getSeatsByNumbers(show, seats);
+    // if (seatToBook.length !== seats.length) {
+    //   throw new AppError("Some seats not found", 404);
+    // }
+    // const unavailableSeats = seatToBook.filter(
+    //   (s) => s.status !== SEAT_STATUS.AVAILABLE,
+    // );
+    // if (unavailableSeats.length > 0) {
+    //   throw new AppError(
+    //     `Seats ${unavailableSeats.map((s) => s.seatNumber).join(", ")} are not available`,
+    //     400,
+    //   );
+    // }
+    // let totalPrice = 0;
+    // const basePrice = movie.price;
+    // let bookingSeats = [];
+    // seatToBook.forEach((seat) => {
+    //   const seatPrice = basePrice * seat.priceMultiplier;
+    //   totalPrice += seatPrice;
+    //   seat.status = SEAT_STATUS.BOOKED;
+    //   bookingSeats.push({
+    //     seatId: seat._id,
+    //     seatNumber: seat.seatNumber,
+    //     seatType: seat.seatType,
+    //     price: seatPrice,
+    //   });
+    // });
+    // const user = await MovieRepository.findByIdWithSessionAndUser(
+    //   userId,
+    //   session,
+    // );
+    // if (!user) {
+    //   throw new AppError("User not Found", 404);
+    // }
+    // user.bookings.push({
+    //   movie: movieId,
+    //   status: BOOKING_STATUS.CONFIRMED,
+    //   seats: bookingSeats,
+    //   showId: showId,
+    //   totalPrice,
+    // });
+    // show.availableSeats -= seats.length;
+    // show.occupiedSeats += seatToBook.length;
+    // await MovieRepository.saveWithSession(user, session);
+    // await MovieRepository.saveWithSession(movie, session);
+    // return {
+    //   bookingSeats: bookingSeats,
+    //   totalPrice: totalPrice,
+    // };
+  }
+
+  async checkShows(id) {
+    const movie = await MovieRepository.findById(id);
+    if (!movie) {
+      throw new AppError("Movie not Found", 404);
+    }
+    for (const show of movie.shows) {
+      await releaseExpiredLocks(show);
+    }
+    await MovieRepository.save(movie);
+    return movie.shows;
+  }
+  async checkShow(id, showId) {
+    const movie = await MovieRepository.findById(id);
+    if (!movie) {
+      throw new AppError("Movie not Found", 404);
+    }
+    const show = movie.shows.find((s) => s._id.toString() === showId);
+    if (!show) {
+      throw new AppError("Show not Found", 404);
+    }
+    await releaseExpiredLocks(show);
+    await MovieRepository.save(movie);
+    return show;
+  }
+
+  async holdSeat(movieId, showId, seats, userId, session) {
     const movie = await MovieRepository.findByIdWithSession(movieId, session);
     if (!movie) {
       throw new AppError("Movie not Found", 404);
@@ -94,6 +182,29 @@ class MovieDomain {
     if (!show) {
       throw new AppError("Show not Found", 404);
     }
+    await releaseExpiredLocks(show);
+
+    if (!Array.isArray(seats) || seats.length === 0) {
+      throw new AppError("At least one seat is required", 400);
+    }
+
+    const user = await MovieRepository.findByIdWithSessionAndUser(
+      userId,
+      session,
+    );
+    if (!user) {
+      throw new AppError("User not Found", 404);
+    }
+    const existingHold = user.bookings.find(
+      (booking) =>
+        booking.showId.toString() === showId.toString() &&
+        booking.status === BOOKING_STATUS.HOLD,
+    );
+
+    if (existingHold) {
+      throw new AppError("You already have an active hold for this show.", 400);
+    }
+
     if (show.availableSeats < seats.length) {
       throw new AppError("Not enough seats available", 400);
     }
@@ -104,8 +215,20 @@ class MovieDomain {
       throw new AppError("Some seats not found", 404);
     }
 
+    // const unavailableSeats = seatToBook.filter((s) => {
+    //   if (s.status === SEAT_STATUS.AVAILABLE) {
+    //     return false;
+    //   }
+
+    //   if (s.status === SEAT_STATUS.LOCKED && s.lockedBy?.equals(userId)) {
+    //     return false;
+    //   }
+
+    //   return true;
+    // });
+
     const unavailableSeats = seatToBook.filter(
-      (s) => s.status !== SEAT_STATUS.AVAILABLE,
+      (seat) => seat.status !== SEAT_STATUS.AVAILABLE,
     );
     if (unavailableSeats.length > 0) {
       throw new AppError(
@@ -113,15 +236,15 @@ class MovieDomain {
         400,
       );
     }
-
     let totalPrice = 0;
-    const basePrice = movie.price;
-    let bookingSeats = [];
+    const bookingSeats = [];
 
     seatToBook.forEach((seat) => {
-      const seatPrice = basePrice * seat.priceMultiplier;
+      const seatPrice = movie.price * seat.priceMultiplier;
       totalPrice += seatPrice;
-      seat.status = SEAT_STATUS.BOOKED;
+      seat.status = SEAT_STATUS.LOCKED;
+      seat.lockedBy = userId;
+      seat.lockedExpires = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
 
       bookingSeats.push({
         seatId: seat._id,
@@ -131,6 +254,42 @@ class MovieDomain {
       });
     });
 
+    user.bookings.push({
+      movie: movieId,
+      status: BOOKING_STATUS.HOLD,
+      seats: bookingSeats,
+      showId: showId,
+      totalPrice,
+    });
+
+    show.availableSeats -= seats.length;
+    show.lockedSeats += seatToBook.length;
+    // show.occupiedSeats += seatToBook.length; after payment or book task
+
+    await MovieRepository.saveWithSession(user, session);
+    await MovieRepository.saveWithSession(movie, session);
+    return {
+      bookingSeats: bookingSeats,
+      totalPrice: totalPrice,
+    };
+  }
+
+  async bookSeat(movieId, showId, seats, userId, session) {
+    const movie = await MovieRepository.findByIdWithSession(movieId, session);
+    if (!movie) {
+      throw new AppError("Movie not Found", 404);
+    }
+
+    const show = movie.shows.id(showId);
+    if (!show) {
+      throw new AppError("Show not Found", 404);
+    }
+
+    await releaseExpiredLocks(show);
+
+    if (!Array.isArray(seats) || seats.length === 0) {
+      throw new AppError("At least one seat is required", 400);
+    }
     const user = await MovieRepository.findByIdWithSessionAndUser(
       userId,
       session,
@@ -139,22 +298,54 @@ class MovieDomain {
       throw new AppError("User not Found", 404);
     }
 
-    user.bookings.push({
-      movie: movieId,
-      status: BOOKING_STATUS.CONFIRMED,
-      seats: bookingSeats,
-      showId: showId,
-      totalPrice,
-    });
+    const existingHold = user.bookings.find(
+      (booking) =>
+        booking.showId.toString() === showId.toString() &&
+        booking.status === BOOKING_STATUS.HOLD &&
+        booking.seats.length === seats.length &&
+        seats.every((seatNumber) =>
+          booking.seats.some((seat) => seat.seatNumber === seatNumber),
+        ),
+    );
+    if (!existingHold) {
+      throw new AppError("No matching active hold found for these seats", 400);
+    }
+    const seatToBook = getSeatsByNumbers(show, seats);
+    if (seatToBook.length !== seats.length) {
+      throw new AppError("Some seats not found", 404);
+    }
 
-    show.availableSeats -= seats.length;
+    const unavailableSeats = seatToBook.filter(
+      (seat) =>
+        seat.status !== SEAT_STATUS.LOCKED ||
+        !seat.lockedBy?.equals(userId) ||
+        !seat.lockedExpires ||
+        seat.lockedExpires <= new Date(),
+    );
+    if (unavailableSeats.length > 0) {
+      throw new AppError(
+        `Seats ${unavailableSeats.map((s) => s.seatNumber).join(", ")} are not held by you`,
+        400,
+      );
+    }
+
+    seatToBook.forEach((seat) => {
+      seat.status = SEAT_STATUS.BOOKED;
+      seat.lockedBy = null;
+      seat.lockedExpires = null;
+    });
+    existingHold.status = BOOKING_STATUS.CONFIRMED;
+    existingHold.bookedAt = new Date();
+
+    show.lockedSeats -= seatToBook.length;
     show.occupiedSeats += seatToBook.length;
 
     await MovieRepository.saveWithSession(user, session);
     await MovieRepository.saveWithSession(movie, session);
+
     return {
-      bookingSeats: bookingSeats,
-      totalPrice: totalPrice,
+      bookingSeats: existingHold.seats,
+      totalPrice: existingHold.totalPrice,
     };
   }
 }

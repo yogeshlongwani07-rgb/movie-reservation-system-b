@@ -32,6 +32,15 @@ const seatSchema = new mongoose.Schema(
       default: 1.0,
       required: true,
     },
+    lockedBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    lockedExpires: {
+      type: Date,
+      default: null,
+    },
   },
   { _id: true },
 );
