@@ -51,6 +51,10 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       default: null,
     },
+    holdExpiresAt: {
+      type: Date,
+      default: null,
+    },
   },
   { _id: true },
 );

@@ -1,7 +1,7 @@
 const { SEAT_STATUS } = require("../Constants");
 
-async function releaseExpiredLocks(show) {
-  const now = new Date();
+async function releaseExpiredLocks(show, now = new Date()) {
+  let releasedCount = 0;
 
   for (const seat of show.seats) {
     if (
@@ -15,8 +15,10 @@ async function releaseExpiredLocks(show) {
 
       show.availableSeats++;
       show.lockedSeats--;
+      releasedCount++;
     }
   }
+  return releasedCount;
 }
 
 module.exports = { releaseExpiredLocks };
