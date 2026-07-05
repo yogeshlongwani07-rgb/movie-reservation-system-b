@@ -19,13 +19,13 @@ for (const varName of requiredEnvVars) {
   }
 }
 let server;
-let cleanupInterval;
+let cleanupJob;
 async function startServer() {
   await connectToDb();
 
   const app = createApp();
   const port = process.env.PORT || 3000;
-  cleanupInterval = startLockCleanupJob();
+  cleanupJob = startLockCleanupJob();
   server = app.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });
@@ -33,8 +33,8 @@ async function startServer() {
 
 async function shutdownServer(signal) {
   console.log(`Received ${signal}. Shutting down server...`);
-  if (cleanupInterval) {
-    clearInterval(cleanupInterval);
+  if (cleanupJob) {
+    clearInterval(cleanupJob);
   }
   if (server) {
     const forceShutdownTimeout = setTimeout(() => {
