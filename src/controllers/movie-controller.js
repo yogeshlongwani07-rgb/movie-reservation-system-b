@@ -192,6 +192,8 @@ async function holdSeats(req, res) {
   }
 }
 
+async function bookSteat() {}
+
 module.exports = {
   createMovie,
   getAllMovies,
@@ -202,4 +204,5 @@ module.exports = {
   checkMovieShows,
   checkMovieShow,
   holdSeats,
+  bookSteat,
 };

@@ -267,6 +267,8 @@ class MovieDomain {
     //emit socket event
     //return response
   }
+
+  async bookSteat() {}
 }
 
 module.exports = new MovieDomain();

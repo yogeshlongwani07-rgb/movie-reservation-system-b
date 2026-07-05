@@ -20,6 +20,7 @@ const {
   checkMovieShows,
   checkMovieShow,
   holdSeats,
+  bookSteat,
 } = require("../controllers/movie-controller");
 
 //Movies CRUD
@@ -81,4 +82,6 @@ router.post(
 );
 
 router.post("/:id/show/:showId/hold", isLoggedIn, isUser, holdSeats);
+router.post("/:id/show/:showId/book", isLoggedIn, isUser, bookSteat);
+
 module.exports = router;
