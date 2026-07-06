@@ -17,7 +17,6 @@ const {
   updateMovie,
   deleteMovie,
   movieByDate,
-  createBooking,
   checkMovieShows,
   checkMovieShow,
   holdSeats,
@@ -73,14 +72,6 @@ router.get(
   validate(movieIdWithShowIdParamsSchema, "params"),
 
   checkMovieShow,
-);
-
-router.post(
-  "/book-show",
-  isLoggedIn,
-  isUser,
-  validate(bookShowSchema),
-  createBooking,
 );
 
 router.post(

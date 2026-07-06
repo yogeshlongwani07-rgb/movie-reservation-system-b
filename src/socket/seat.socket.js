@@ -7,8 +7,13 @@ function registerSeatSocket(io, socket) {
       return;
     }
 
+    console.log("Join event received");
+    console.log(movieId);
+    console.log(showId);
+
     const roomName = `show:${movieId}:${showId}`;
     socket.join(roomName);
+    console.log("registerSeatSocket executed");
 
     socket.emit("seat:joined-show", {
       movieId,
