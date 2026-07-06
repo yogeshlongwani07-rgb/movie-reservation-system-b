@@ -126,6 +126,14 @@ class UserDomain {
     const accessToken = generateAccessToken(user);
     return accessToken;
   }
+
+  async authorize(userId) {
+    if (!userId) {
+      throw new AppError("Please Login First", 400);
+    }
+    let user = await UserRepository.findById(userId);
+    return user;
+  }
 }
 
 module.exports = new UserDomain();
