@@ -7,7 +7,7 @@ const { releaseExpiredLocks } = require("../utils/releaseExpiredLocks");
 class MovieDomain {
   async create(body, userId) {
     if (!body.shows || !Array.isArray(body.shows)) {
-      throw new AppError("Atleast one Show required in correct format");
+      throw new AppError("Atleast one Show required in correct format", 402);
     }
 
     const newBody = {

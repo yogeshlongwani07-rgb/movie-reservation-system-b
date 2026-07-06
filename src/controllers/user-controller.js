@@ -40,7 +40,7 @@ async function loginUser(req, res) {
   try {
     let { email, password, role } = req.body;
 
-    const user = await UserDomain.userLogin(email, password, role);
+    const user = await UserDomain.userLogin(email, password);
     const { accessToken, refreshToken } = user;
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
