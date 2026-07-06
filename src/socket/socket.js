@@ -18,11 +18,12 @@ function initializeSocket(httpServer) {
 
   io.on("connection", (socket) => {
     console.log("New client connected:", socket.id);
+
+    socket.on("disconnect", (socket) => {
+      console.log("Client disconnected:", socket.id);
+    });
   });
 
-  io.on("disconnect", (socket) => {
-    console.log("New client connected:", socket.id);
-  });
   return io;
 }
 
