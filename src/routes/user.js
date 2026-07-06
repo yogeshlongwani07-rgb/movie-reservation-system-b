@@ -14,18 +14,13 @@ const {
   checkMyBookings,
   cancelBooking,
   refreshAccessToken,
+  authorize,
 } = require("../controllers/user-controller");
 
 router.post("/register", validate(registerUserSchema), registerUser);
 router.post("/login", validate(loginUserSchema), loginUser);
 
-router.get("/auth-me", isLoggedIn, isUser, (req, res) => {
-  res.status(200).json({
-    success: true,
-    message: "Authenticated",
-    user: req.user,
-  });
-});
+router.get("/auth-me", isLoggedIn, isUser, authorize);
 
 router.delete("/delete", isLoggedIn, deleteUser);
 router.get("/my-bookings", isLoggedIn, isUser, checkMyBookings);

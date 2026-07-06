@@ -2,6 +2,7 @@ const MovieDomain = require("../services/movie-domain");
 const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const { BOOKING_STATUS } = require("../Constants");
+const { emitToShow } = require("../socket/socketManager");
 
 async function createMovie(req, res) {
   try {
@@ -89,49 +90,6 @@ async function movieByDate(req, res) {
   }
 }
 
-async function createBooking(req, res) {
-  const session = await mongoose.startSession();
-  try {
-    session.startTransaction();
-
-    const { movieId, showId, seats } = req.body;
-    const ticket = await MovieDomain.bookTickets(
-      movieId,
-      showId,
-      seats,
-      req.user._id,
-      session,
-    );
-    await session.commitTransaction();
-
-    const { bookingSeats, totalPrice } = ticket;
-
-    res.status(201).json({
-      message: "Show Booked successfully",
-      success: true,
-      booking: {
-        movieId,
-        showId,
-        seats: bookingSeats,
-        totalPrice,
-        status: BOOKING_STATUS.CONFIRMED,
-      },
-    });
-  } catch (err) {
-    if (err instanceof AppError) {
-      await session.abortTransaction();
-      return res
-        .status(err.statusCode)
-        .json({ message: err.message, success: false });
-    }
-    await session.abortTransaction();
-    console.log("error", err);
-    res.status(500).json({ message: "Unexpected Error", success: false });
-  } finally {
-    await session.endSession();
-  }
-}
-
 async function checkMovieShows(req, res) {
   try {
     const movieId = req.params.id;
@@ -183,6 +141,8 @@ async function holdSeats(req, res) {
     );
     await session.commitTransaction();
 
+    emitToShow(movieId, showId, "seat:held", { seats: ticket.bookingSeats });
+
     res.status(200).json({
       message: "Seat held successfully",
       success: true,
@@ -204,8 +164,6 @@ async function holdSeats(req, res) {
   }
 }
 
-
-
 async function bookSeat(req, res) {
   const session = await mongoose.startSession();
 
@@ -222,6 +180,8 @@ async function bookSeat(req, res) {
       session,
     );
     await session.commitTransaction();
+
+    emitToShow(movieId, showId, "seat:booked", { seats: ticket.bookingSeats });
 
     res.status(200).json({
       message: "Seat booked successfully",
@@ -256,7 +216,6 @@ module.exports = {
   updateMovie,
   deleteMovie,
   movieByDate,
-  createBooking,
   checkMovieShows,
   checkMovieShow,
   holdSeats,

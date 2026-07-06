@@ -1,9 +1,11 @@
 require("dotenv").config();
+const http = require("http");
 const mongoose = require("mongoose");
 const { startLockCleanupJob } = require("./src/jobs/lockCleanup.job");
 
 const createApp = require("./src/app");
 const connectToDb = require("./src/config/connect");
+const {initializeSocket} = require("./src/socket/socket");
 
 const requiredEnvVars = [
   "MONGO_URL",
@@ -25,8 +27,10 @@ async function startServer() {
 
   const app = createApp();
   const port = process.env.PORT || 3000;
+  server = http.createServer(app);
+  initializeSocket(server);
   cleanupJob = startLockCleanupJob();
-  server = app.listen(port, () => {
+  server.listen(port, () => {
     console.log(`Server running on port ${port}`);
   });
 }
