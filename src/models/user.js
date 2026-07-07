@@ -74,7 +74,28 @@ const userSchema = new mongoose.Schema(
 
     password: {
       type: String,
-      required: true,
+      required: function () {
+        return this.provider === "local";
+      },
+    },
+
+    providerId: {
+      type: String,
+      default: null,
+      sparse: true,
+      index: true,
+    },
+
+    provider: {
+      type: String,
+      enum: ["local", "google"],
+      default: "local",
+    },
+
+    avatar: {
+      type: String,
+      default:
+        "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT1WcuoYVVzU1rIinX3_Upr2zYnT55OcSkygN_xIWEatPqf2J7IefRMfBJL&s=10",
     },
 
     role: {

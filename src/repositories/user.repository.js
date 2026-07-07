@@ -17,6 +17,9 @@ class UserRepository {
   async findById(id) {
     return await User.findById(id).populate("bookings");
   }
+  async findByProviderId(providerId) {
+    return await User.findOne({ providerId });
+  }
   async findByIdSafe(id) {
     return await User.findById(id).select("-password -refreshToken");
   }
