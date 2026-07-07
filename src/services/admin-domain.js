@@ -67,6 +67,13 @@ class AdminDomain {
     await AdminRepository.deleteAdminMovieswithSession(id, session);
   }
 
+  async getProfile(adminId) {
+    const admin = await AdminRepository.findByIdSafe(adminId);
+    if (!admin) {
+      throw new AppError("Admin not Found", 404);
+    }
+    return admin;
+  }
   async showAdminMovies(adminId) {
     const admin = await AdminRepository.findByIdWithMovies(adminId);
     if (!admin) {

@@ -40,7 +40,7 @@ async function loginUser(req, res) {
   try {
     let { email, password, role } = req.body;
 
-    const user = await UserDomain.userLogin(email, password);
+    const user = await UserDomain.userLogin(email, password, role);
     const { accessToken, refreshToken } = user;
     res.cookie("accessToken", accessToken, {
       httpOnly: true,
@@ -79,6 +79,25 @@ async function deleteUser(req, res) {
       success: true,
       message: "User deleted",
     });
+  } catch (err) {
+    if (err instanceof AppError) {
+      return res
+        .status(err.statusCode)
+        .json({ message: err.message, success: false });
+    }
+    console.log("error", err);
+    return res.status(500).json({
+      message: "Unexpected Error",
+      success: false,
+    });
+  }
+}
+
+async function getMyProfile(req, res) {
+  try {
+    const userId = req.user._id;
+    const user = await UserDomain.getProfile(userId);
+    res.status(200).json({ success: true, message: "Authenticated", user });
   } catch (err) {
     if (err instanceof AppError) {
       return res
@@ -175,32 +194,12 @@ async function refreshAccessToken(req, res) {
   }
 }
 
-async function authorize(req, res) {
-  try {
-    let user = await UserDomain.authorize(req.user._id);
-    return res
-      .status(200)
-      .json({ message: "Authenticated", success: true, user: user });
-  } catch (err) {
-    if (err instanceof AppError) {
-      return res
-        .status(err.statusCode)
-        .json({ message: err.message, success: false });
-    }
-    console.log(err);
-    return res.status(401).json({
-      success: false,
-      message: "Refresh token expired or invalid",
-    });
-  }
-}
-
 module.exports = {
   registerUser,
   loginUser,
   deleteUser,
+  getMyProfile,
   checkMyBookings,
   cancelBooking,
   refreshAccessToken,
-  authorize,
 };

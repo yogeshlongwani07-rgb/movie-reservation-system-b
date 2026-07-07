@@ -103,6 +103,27 @@ async function deleteAdmin(req, res) {
     await session.endSession();
   }
 }
+async function getMyProfile(req, res) {
+  try {
+    const adminId = req.user._id;
+    const admin = await AdminDomain.getProfile(adminId);
+    res
+      .status(200)
+      .json({ success: true, message: "Authenticated", user: admin });
+  } catch (err) {
+    if (err instanceof AppError) {
+      return res
+        .status(err.statusCode)
+        .json({ message: err.message, success: false });
+    }
+    console.log("error", err);
+    return res.status(500).json({
+      message: "Unexpected Error",
+      success: false,
+    });
+  }
+}
+
 async function checkListedMovies(req, res) {
   try {
     const adminId = req.user._id;
@@ -155,6 +176,7 @@ module.exports = {
   registerAdmin,
   loginAdmin,
   deleteAdmin,
+  getMyProfile,
   checkListedMovies,
   refreshAccessToken,
 };
