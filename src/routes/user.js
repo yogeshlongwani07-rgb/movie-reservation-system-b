@@ -15,6 +15,7 @@ const {
   checkMyBookings,
   cancelBooking,
   refreshAccessToken,
+  logout,
 } = require("../controllers/user-controller");
 
 router.post("/register", validate(registerUserSchema), registerUser);
@@ -33,13 +34,10 @@ router.post(
 );
 router.post("/refresh-token", refreshAccessToken);
 
-router.post("/logout", (req, res) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
-  res.json({
-    success: true,
-    message: "Logged out",
-  });
-});
+// router.post("/logout", (req, res) => {
+
+// });
+
+router.post("/logout", isLoggedIn, logout);
 
 module.exports = router;

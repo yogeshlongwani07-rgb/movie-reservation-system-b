@@ -133,6 +133,15 @@ class UserDomain {
     const accessToken = generateAccessToken(user);
     return accessToken;
   }
+
+  async logout(userId) {
+    const user = await UserRepository.findById(userId);
+    if (!user) {
+      throw new AppError("User not found", 405);
+    }
+    user.refreshToken = null;
+    await UserRepository.save(user);
+  }
 }
 
 module.exports = new UserDomain();
