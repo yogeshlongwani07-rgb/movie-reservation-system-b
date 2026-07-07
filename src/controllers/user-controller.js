@@ -194,6 +194,30 @@ async function refreshAccessToken(req, res) {
   }
 }
 
+async function logout(req, res) {
+  try {
+    let userId = req.user._id;
+    let response = await UserDomain.logout(userId);
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    res.json({
+      success: true,
+      message: "Logged out",
+    });
+  } catch (err) {
+    if (err instanceof AppError) {
+      return res
+        .status(err.statusCode)
+        .json({ message: err.message, success: false });
+    }
+    console.log(err);
+    return res.status(401).json({
+      success: false,
+      message: "Refresh token expired or invalid",
+    });
+  }
+}
+
 module.exports = {
   registerUser,
   loginUser,
@@ -202,4 +226,5 @@ module.exports = {
   checkMyBookings,
   cancelBooking,
   refreshAccessToken,
+  logout,
 };

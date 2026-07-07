@@ -172,6 +172,30 @@ async function refreshAccessToken(req, res) {
   }
 }
 
+async function logout(req, res) {
+  try {
+    const adminId = req.user._id;
+    const response = await AdminDomain.logout(adminId);
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
+    res.json({
+      success: true,
+      message: "Logged out",
+    });
+  } catch (err) {
+    if (err instanceof AppError) {
+      return res
+        .status(err.statusCode)
+        .json({ message: err.message, success: false });
+    }
+    console.log(err);
+    return res.status(401).json({
+      success: false,
+      message: "Refresh token expired or invalid",
+    });
+  }
+}
+
 module.exports = {
   registerAdmin,
   loginAdmin,
@@ -179,4 +203,5 @@ module.exports = {
   getMyProfile,
   checkListedMovies,
   refreshAccessToken,
+  logout,
 };

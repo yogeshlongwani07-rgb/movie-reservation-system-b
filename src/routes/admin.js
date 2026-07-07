@@ -15,6 +15,7 @@ const {
   getMyProfile,
   checkListedMovies,
   refreshAccessToken,
+  logout,
 } = require("../controllers/admin-controller");
 
 router.post("/register", validate(registerAdminSchema), registerAdmin);
@@ -29,13 +30,6 @@ router.get("/listed-movies", isLoggedIn, isAdmin, checkListedMovies);
 
 router.post("/refresh-token", refreshAccessToken);
 
-router.post("/logout", (req, res) => {
-  res.clearCookie("accessToken");
-  res.clearCookie("refreshToken");
-  res.json({
-    success: true,
-    message: "Logged out",
-  });
-});
+router.post("/logout", isLoggedIn, logout);
 
 module.exports = router;
