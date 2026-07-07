@@ -26,6 +26,9 @@ class AdminRepository {
   async findById(id) {
     return await Admin.findById(id);
   }
+  async findByIdSafe(id) {
+    return await Admin.findById(id).select("-password -refreshToken");
+  }
   async findByIdWithMovies(id) {
     return await Admin.findById(id).populate("movies");
   }

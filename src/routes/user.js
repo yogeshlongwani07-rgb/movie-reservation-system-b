@@ -11,16 +11,16 @@ const {
   registerUser,
   loginUser,
   deleteUser,
+  getMyProfile,
   checkMyBookings,
   cancelBooking,
   refreshAccessToken,
-  authorize,
 } = require("../controllers/user-controller");
 
 router.post("/register", validate(registerUserSchema), registerUser);
 router.post("/login", validate(loginUserSchema), loginUser);
 
-router.get("/auth-me", isLoggedIn, isUser, authorize);
+router.get("/auth-me", isLoggedIn, isUser, getMyProfile);
 
 router.delete("/delete", isLoggedIn, deleteUser);
 router.get("/my-bookings", isLoggedIn, isUser, checkMyBookings);
