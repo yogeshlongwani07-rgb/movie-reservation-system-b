@@ -34,10 +34,6 @@ router.post(
 );
 router.post("/refresh-token", refreshAccessToken);
 
-// router.post("/logout", (req, res) => {
-
-// });
-
 router.post("/logout", isLoggedIn, logout);
 
 module.exports = router;

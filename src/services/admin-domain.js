@@ -96,6 +96,16 @@ class AdminDomain {
     const accessToken = generateAccessToken(admin);
     return accessToken;
   }
+
+  async logout(adminId) {
+    const admin = await AdminRepository.findById(adminId);
+    if (!admin) {
+      throw new AppError("Admin not found", 405);
+    }
+
+    admin.refreshToken = null;
+    await AdminRepository.save(admin);
+  }
 }
 
 module.exports = new AdminDomain();
