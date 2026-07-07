@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Socket Test</title>
+  </head>
+  <body>
+    <h2>Socket Test</h2>
+
+    <button id="join">Join Room</button>
+
+    <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+
+    <script>
+      const socket = io("http://localhost:3000");
+
+      socket.on("connect", () => {
+        console.log("Connected:", socket.id);
+      });
+
+      document.getElementById("join").onclick = () => {
+        socket.emit("seat:join-show", {
+          movieId: "123",
+          showId: "456",
+        });
+      };
+
+      socket.on("seat:joined-show", (data) => {
+        console.log("Joined room", data);
+      });
+
+      socket.on("seat:held", (data) => {
+        console.log("Seat held", data);
+      });
+
+      socket.on("seat:booked", (data) => {
+        console.log("Seat booked", data);
+      });
+
+      socket.on("seat:error", (data) => {
+        console.log(data);
+      });
+    </script>
+  </body>
+</html>
