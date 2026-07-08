@@ -5,7 +5,7 @@ const { startLockCleanupJob } = require("./src/jobs/lockCleanup.job");
 
 const createApp = require("./src/app");
 const connectToDb = require("./src/config/connect");
-const {initializeSocket} = require("./src/socket/socket");
+const { initializeSocket } = require("./src/socket/socket");
 
 const requiredEnvVars = [
   "MONGO_URL",
@@ -44,7 +44,7 @@ async function shutdownServer(signal) {
     const forceShutdownTimeout = setTimeout(() => {
       console.error("Forcefully shutting down server after 10 seconds");
       process.exit(1);
-    }, 10000);
+    }, 3000);
 
     server.close(async () => {
       try {

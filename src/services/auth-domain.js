@@ -1,13 +1,16 @@
-const bcrypt = require("bcrypt");
 const AppError = require("../utils/appError");
 const UserRepository = require("../repositories/user.repository");
+const {
+  generateRefreshToken,
+  generateAccessToken,
+} = require("../utils/generateToken");
 
 class AuthDomain {
   async findOrCreateGoogleUser(profile) {
-    const email = profile.email;
-    const googleId = profile._id;
-    const name = profile.name;
-    const avatar = profile.avatar || null;
+    const email = profile.emails?.[0]?.value;
+    const googleId = profile.id;
+    const name = profile.name.givenName;
+    const avatar = profile.photos?.[0]?.value || null;
     if (!email) {
       throw new AppError("Google account email not found", 400);
     }
