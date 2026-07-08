@@ -4,36 +4,6 @@ This project is continuously evolving with the goal of becoming a **production-r
 
 ---
 
-## 🎟️ Advanced Seat Reservation
-
-- Interactive seat selection with multiple seat categories (Regular, Premium, Recliner)
-- Configurable screen layouts with dynamic row and seat generation
-- Real-time seat availability
-- Temporary seat locking with automatic expiration
-- Prevention of double booking using MongoDB Transactions and Atomic Operations
-
----
-
-## 💳 Payment Integration
-
-- Razorpay / Stripe integration
-- Secure payment verification using Webhooks
-- Pending, Successful and Failed payment states
-- Automatic booking confirmation after successful payment
-- Refund workflow for cancelled bookings
-- Idempotency support to prevent duplicate payments
-
----
-
-## ⚡ Real-Time Booking System
-
-- Live seat updates using Socket.IO
-- Instantly reflect booked seats across all connected users
-- Real-time booking notifications
-- Live show availability updates
-
----
-
 ## 🚀 Performance Optimization
 
 - Redis caching for frequently accessed movies and show listings
@@ -47,12 +17,8 @@ This project is continuously evolving with the goal of becoming a **production-r
 
 ## 🔐 Advanced Security
 
-- JWT Refresh Token authentication
 - Password reset using secure email links
 - Email verification before account activation
-- API Rate Limiting
-- Helmet security middleware
-- Advanced CORS configuration
 - Request sanitization against NoSQL Injection
 - Protection against XSS attacks
 - Secure HTTP headers
@@ -63,12 +29,8 @@ This project is continuously evolving with the goal of becoming a **production-r
 
 - Controller → Service → Repository Pattern
 - Dependency Injection
-- Custom Error Classes
 - Global Error Handling Middleware
 - Environment Configuration Validation
-- API Versioning (`/api/v1`, `/api/v2`)
-- Feature-based folder architecture
-- Reusable utility modules
 
 ---
 
@@ -79,7 +41,6 @@ This project is continuously evolving with the goal of becoming a **production-r
 - Email processing queue
 - Notification queue
 - Payment retry mechanism
-- Scheduled cleanup jobs using Cron
 
 ---
 
@@ -109,11 +70,6 @@ This project is continuously evolving with the goal of becoming a **production-r
 ## 🔍 Smart Search
 
 - Full-text search
-- Autocomplete suggestions
-- Search by genre
-- Search by language
-- Search by release year
-- Trending and popular movies
 - Advanced filtering and sorting
 
 ---
@@ -175,19 +131,13 @@ This project is continuously evolving with the goal of becoming a **production-r
 - Review & Rating system
 - Movie recommendations
 - Coupon & Discount management
-- Loyalty reward points
 - Booking history export (PDF)
-- Admin dashboard
-- Multi-theatre support
-- Multi-screen management
-- Multi-language support
 - Dark mode support (Frontend Integration)
 
 ---
 
 ## 🎯 Engineering Goals
 
-This project is not limited to CRUD operations. The long-term objective is to implement concepts commonly used in large-scale production systems, including:
 
 - Distributed Systems
 - Scalable Backend Architecture
