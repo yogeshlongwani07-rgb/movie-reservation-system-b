@@ -74,7 +74,8 @@ async function deleteUser(req, res) {
   try {
     let id = req.user._id;
     const user = await UserDomain.userDelete(id);
-
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
     res.json({
       success: true,
       message: "User deleted",
