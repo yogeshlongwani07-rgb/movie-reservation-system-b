@@ -3,6 +3,8 @@ const MovieRepository = require("../repositories/movie.repository");
 const { BOOKING_STATUS, SEAT_STATUS } = require("../Constants");
 const { generateSeats, getSeatsByNumbers } = require("../utils/seatGenerator");
 const { releaseExpiredLocks } = require("../utils/releaseExpiredLocks");
+const QRCode = require("qrcode");
+const crypto = require("crypto");
 
 class MovieDomain {
   async create(body, userId) {
@@ -269,8 +271,20 @@ class MovieDomain {
       seat.lockedBy = null;
       seat.lockedExpires = null;
     });
+
+    const randomId = crypto.randomUUID();
+
+    const qrData = {
+      userId,
+      movieId,
+      showId,
+      randomId,
+    };
+
+    const qr = await QRCode.toDataURL(JSON.stringify(qrData));
     existingHold.status = BOOKING_STATUS.CONFIRMED;
     existingHold.bookedAt = new Date();
+    existingHold.tickettoken = qr;
 
     show.lockedSeats -= seatToBook.length;
     show.occupiedSeats += seatToBook.length;
@@ -281,6 +295,7 @@ class MovieDomain {
     return {
       bookingSeats: existingHold.seats,
       totalPrice: existingHold.totalPrice,
+      qr,
     };
   }
 }
