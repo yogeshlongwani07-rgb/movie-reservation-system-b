@@ -109,6 +109,16 @@ const movieSchema = new mongoose.Schema(
       type: Number,
       required: true,
     },
+
+    trailer: {
+      type: String,
+      default: null,
+    },
+    poster: {
+      type: String,
+      default:
+        "https://plus.unsplash.com/premium_photo-1664443577507-1930a78a60df",
+    },
     rating: {
       type: Number,
       default: 0,
