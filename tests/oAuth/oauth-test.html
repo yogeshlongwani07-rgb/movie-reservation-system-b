@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>oauth-success</title>
+
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        background: #f5f5f5;
+      }
+
+      .card {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        width: 400px;
+        text-align: center;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      button {
+        padding: 12px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 16px;
+        margin-top: 10px;
+      }
+
+      #googleBtn {
+        background: #4285f4;
+        color: white;
+      }
+
+      #meBtn {
+        background: green;
+        color: white;
+      }
+
+      pre {
+        text-align: left;
+        background: #eee;
+        padding: 10px;
+        overflow: auto;
+        margin-top: 20px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h2>OAuth Testing</h2>
+
+      <button id="googleBtn">Continue with Google</button>
+
+      <br /><br />
+
+      <button id="meBtn">Check auth-me</button>
+
+      <pre id="output"></pre>
+    </div>
+
+    <script>
+      const API = "http://localhost:3000/api/v1";
+
+      document.getElementById("googleBtn").onclick = () => {
+        window.location.href = `${API}/auth/google`;
+      };
+
+      document.getElementById("meBtn").onclick = async () => {
+        try {
+          const response = await fetch(`${API}/user/auth-me`, {
+            credentials: "include",
+          });
+
+          const data = await response.json();
+
+          document.getElementById("output").textContent = JSON.stringify(
+            data,
+            null,
+            2,
+          );
+        } catch (err) {
+          document.getElementById("output").textContent = err.message;
+        }
+      };
+    </script>
+  </body>
+</html>
