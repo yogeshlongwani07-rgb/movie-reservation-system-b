@@ -39,8 +39,10 @@ async function getAllMovies(req, res) {
 async function updateMovie(req, res) {
   try {
     const { id } = req.params;
-    let body = req.body;
-    const movie = await MovieDomain.updateMovie(id, req.user._id, body);
+    if (req.file) {
+      req.body.poster = req.file.path;
+    }
+    const movie = await MovieDomain.updateMovie(id, req.user._id, req.body);
 
     res.json({ message: "Movie Updated", success: true });
   } catch (err) {

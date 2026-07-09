@@ -41,6 +41,8 @@ router.put(
 
   isLoggedIn,
   isAdmin,
+  upload.single("poster"),
+  parseShows,
   validate(movieIdParamsSchema, "params"),
   validate(updateMovieSchema),
   updateMovie,
