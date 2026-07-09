@@ -47,6 +47,10 @@ const bookingSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    tickettoken: {
+      type: String,
+      unique: true,
+    },
     cancelledAt: {
       type: Date,
       default: null,

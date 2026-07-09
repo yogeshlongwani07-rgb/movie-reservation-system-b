@@ -192,6 +192,7 @@ async function bookSeat(req, res) {
         seats: ticket.bookingSeats,
         totalPrice: ticket.totalPrice,
         status: BOOKING_STATUS.CONFIRMED,
+        qr: ticket.qr,
       },
     });
   } catch (err) {
