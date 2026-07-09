@@ -82,6 +82,8 @@ async function deleteAdmin(req, res) {
     const admin = await AdminDomain.deleteAdmin(id, session);
 
     await session.commitTransaction();
+    res.clearCookie("accessToken");
+    res.clearCookie("refreshToken");
     res.json({
       success: true,
       message: "Admin and all movies deleted",

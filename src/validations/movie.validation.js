@@ -16,6 +16,8 @@ const createMovieSchema = Joi.object({
   description: Joi.string().trim().required(),
   language: Joi.string().trim().optional(),
   duration: Joi.number().integer().positive().required(),
+  poster: Joi.string().optional(),
+  trailer: Joi.string().optional(),
   rating: Joi.number().min(0).max(10).optional(),
   price: Joi.number().positive().required(),
   shows: Joi.array().items(showSchema).optional(),
