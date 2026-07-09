@@ -6,6 +6,9 @@ const { emitToShow } = require("../socket/socketManager");
 
 async function createMovie(req, res) {
   try {
+    if (req.file) {
+      req.body.poster = req.file.path;
+    }
     const listing = await MovieDomain.create(req.body, req.user._id);
     await MovieDomain.pushMovieToAdmin(req.user._id, listing._id);
     res.status(201).json({ message: "Movie added", success: true });

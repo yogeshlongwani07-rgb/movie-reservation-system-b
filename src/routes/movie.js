@@ -1,6 +1,8 @@
 const express = require("express");
 const router = express.Router();
 const { isLoggedIn, isUser, isAdmin } = require("../middleware/auth");
+const upload = require("../middleware/multer");
+const parseShows = require("../middleware/parseShows");
 const {
   createMovieSchema,
   updateMovieSchema,
@@ -29,6 +31,8 @@ router.post(
   "/create",
   isLoggedIn,
   isAdmin,
+  upload.single("poster"),
+  parseShows,
   validate(createMovieSchema),
   createMovie,
 );
