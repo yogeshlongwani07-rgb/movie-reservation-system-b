@@ -35,6 +35,7 @@ const updateMovieSchema = Joi.object({
 
 const seatNumbersSchema = Joi.array()
   .items(Joi.string().trim().required())
+  .unique()
   .min(1)
   .required();
 
