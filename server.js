@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 const { startLockCleanupJob } = require("./src/jobs/lockCleanup.job");
 
 const createApp = require("./src/app");
-const connectToDb = require("./src/config/connect");
+const connectToMongo = require("./src/config/mongo");
 const { initializeSocket } = require("./src/socket/socket");
 
 const requiredEnvVars = [
@@ -23,7 +23,7 @@ for (const varName of requiredEnvVars) {
 let server;
 let cleanupJob;
 async function startServer() {
-  await connectToDb();
+  await connectToMongo();
 
   const app = createApp();
   const port = process.env.PORT || 3000;

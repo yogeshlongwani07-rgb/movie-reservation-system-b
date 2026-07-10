@@ -2,7 +2,7 @@ const mongoose = require("mongoose");
 
 const URL = process.env.MONGO_URL;
 
-async function connectToDb() {
+async function connectToMongo() {
   try {
     await mongoose.connect(URL);
     console.log("Database connected successfully");
@@ -12,4 +12,4 @@ async function connectToDb() {
   }
 }
 
-module.exports = connectToDb;
+module.exports = connectToMongo;
