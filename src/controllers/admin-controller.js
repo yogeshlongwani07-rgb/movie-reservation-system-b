@@ -1,7 +1,7 @@
 const AdminDomain = require("../services/admin-domain");
 const AppError = require("../utils/appError");
-const  mongoose  = require("mongoose");
-const { FIFTEEN_MINUTES_MS, SEVEN_DAYS_MS } = require("../Constants");
+const mongoose = require("mongoose");
+const setAuthCookies = require("../utils/setAuthCookies");
 
 async function registerAdmin(req, res) {
   try {
@@ -15,18 +15,7 @@ async function registerAdmin(req, res) {
       passkey,
     );
     const { accessToken, refreshToken } = admin;
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: FIFTEEN_MINUTES_MS,
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: SEVEN_DAYS_MS,
-    });
+    setAuthCookies(res, accessToken, refreshToken);
     res.status(201).json({ message: "Account Created", success: true });
   } catch (err) {
     if (err instanceof AppError) {
@@ -47,18 +36,7 @@ async function loginAdmin(req, res) {
     let { email, password } = req.body;
     const admin = await AdminDomain.loginAdmin(email, password);
     const { accessToken, refreshToken } = admin;
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: FIFTEEN_MINUTES_MS,
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: SEVEN_DAYS_MS,
-    });
+    setAuthCookies(res, accessToken, refreshToken);
     res.status(200).json({ message: "Your are Login!", success: true });
   } catch (err) {
     if (err instanceof AppError) {
@@ -149,12 +127,7 @@ async function refreshAccessToken(req, res) {
   try {
     const refreshToken = req.cookies.refreshToken;
     const accessToken = await AdminDomain.makeFreshAccessToken(refreshToken);
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: FIFTEEN_MINUTES_MS, // 15 minutes
-    });
+    setAuthCookies(res, accessToken);
 
     return res.status(200).json({
       success: true,

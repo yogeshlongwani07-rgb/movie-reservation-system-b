@@ -1,6 +1,6 @@
 const AuthDomain = require("../services/auth-domain");
 const AppError = require("../utils/appError");
-const { FIFTEEN_MINUTES_MS, SEVEN_DAYS_MS } = require("../Constants");
+const setAuthCookies = require("../utils/setAuthCookies");
 
 async function googleCallback(req, res) {
   try {
@@ -8,19 +8,7 @@ async function googleCallback(req, res) {
 
     const { accessToken, refreshToken } = await AuthDomain.issueTokens(user);
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: FIFTEEN_MINUTES_MS,
-    });
-
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      maxAge: SEVEN_DAYS_MS,
-    });
+    setAuthCookies(res, accessToken, refreshToken);
 
     return res.redirect(`${process.env.FRONTEND_URL}/oauth-success`);
   } catch (err) {

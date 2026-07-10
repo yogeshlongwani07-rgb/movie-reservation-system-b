@@ -1,7 +1,7 @@
 const UserDomain = require("../services/user-domain");
 const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
-const { FIFTEEN_MINUTES_MS, SEVEN_DAYS_MS } = require("../Constants");
+const setAuthCookies = require("../utils/setAuthCookies");
 
 async function registerUser(req, res) {
   try {
@@ -9,18 +9,8 @@ async function registerUser(req, res) {
 
     const user = await UserDomain.registerUser(name, password, email);
     const { accessToken, refreshToken } = user;
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: FIFTEEN_MINUTES_MS,
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: SEVEN_DAYS_MS,
-    });
+    setAuthCookies(res, accessToken, refreshToken);
+
     res.status(201).json({ message: "Account Created", success: true });
   } catch (err) {
     if (err instanceof AppError) {
@@ -42,18 +32,7 @@ async function loginUser(req, res) {
 
     const user = await UserDomain.userLogin(email, password, role);
     const { accessToken, refreshToken } = user;
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: FIFTEEN_MINUTES_MS,
-    });
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: SEVEN_DAYS_MS,
-    });
+    setAuthCookies(res, accessToken, refreshToken);
 
     res.status(200).json({ message: "Your are Login!", success: true });
   } catch (err) {
@@ -170,12 +149,7 @@ async function refreshAccessToken(req, res) {
     const refreshToken = req.cookies.refreshToken;
     const accessToken = await UserDomain.makeFreshAccessToken(refreshToken);
 
-    res.cookie("accessToken", accessToken, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: FIFTEEN_MINUTES_MS,
-    });
+    setAuthCookies(res, accessToken);
 
     return res.status(200).json({
       success: true,
