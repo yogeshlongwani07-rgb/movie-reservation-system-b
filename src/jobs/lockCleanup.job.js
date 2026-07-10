@@ -60,4 +60,4 @@ function startLockCleanupJob(intervalMs = DEFAULT_CLEANUP_INTERVAL_MS) {
   return interval;
 }
 
-module.exports = { cleanupExpiredHolds, startLockCleanupJob };
+module.exports = { startLockCleanupJob };

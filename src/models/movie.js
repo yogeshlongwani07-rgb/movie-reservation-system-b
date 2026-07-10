@@ -60,7 +60,7 @@ const showSchema = new mongoose.Schema({
   },
   screen: {
     type: String,
-    required: true,
+    default: null,
   },
   layout: {
     rows: {
