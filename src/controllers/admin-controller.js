@@ -1,6 +1,6 @@
 const AdminDomain = require("../services/admin-domain");
 const AppError = require("../utils/appError");
-const { mongoose } = require("mongoose");
+const  mongoose  = require("mongoose");
 const { FIFTEEN_MINUTES_MS, SEVEN_DAYS_MS } = require("../Constants");
 
 async function registerAdmin(req, res) {
