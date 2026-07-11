@@ -23,7 +23,7 @@ router.post("/login", validate(loginUserSchema), loginUser);
 
 router.get("/auth-me", isLoggedIn, isUser, getMyProfile);
 
-router.delete("/delete", isLoggedIn, deleteUser);
+router.delete("/delete", isLoggedIn, isUser, deleteUser);
 router.get("/my-bookings", isLoggedIn, isUser, checkMyBookings);
 router.post(
   "/cancel-booking/:bookingId",
