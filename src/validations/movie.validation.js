@@ -39,12 +39,6 @@ const seatNumbersSchema = Joi.array()
   .min(1)
   .required();
 
-const bookShowSchema = Joi.object({
-  movieId: Joi.string().hex().length(24).required(),
-  showId: Joi.string().hex().length(24).required(),
-  seats: seatNumbersSchema,
-});
-
 const holdOrBookSeatsSchema = Joi.object({
   seatNumber: seatNumbersSchema,
 });
@@ -64,7 +58,6 @@ const dateQuerySchema = Joi.object({
 module.exports = {
   createMovieSchema,
   updateMovieSchema,
-  bookShowSchema,
   movieIdParamsSchema,
   dateQuerySchema,
   holdOrBookSeatsSchema,

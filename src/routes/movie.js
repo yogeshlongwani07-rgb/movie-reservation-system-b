@@ -6,7 +6,6 @@ const parseShows = require("../middleware/parseShows");
 const {
   createMovieSchema,
   updateMovieSchema,
-  bookShowSchema,
   movieIdParamsSchema,
   dateQuerySchema,
   holdOrBookSeatsSchema,
