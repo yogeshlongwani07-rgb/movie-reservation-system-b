@@ -2,35 +2,16 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const cors = require("cors");
-const rateLimit = require("express-rate-limit");
 const passport = require("./config/passport");
-
+const { limiter } = require("../src/middleware/rateLimiter");
 const adminRoutes = require("./routes/admin");
 const movieListingRoutes = require("./routes/movie");
 const userRoutes = require("./routes/user");
 const authRoutes = require("./routes/auth");
-
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  message: {
-    success: false,
-    message:
-      "Too many requests from this IP, please try again after 15 minutes",
-  },
-});
+const corsOptions = require("./Constants");
 
 function createApp() {
   const app = express();
-  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-
-  const corsOptions =
-    process.env.NODE_ENV === "production"
-      ? {
-          origin: process.env.ALLOWED_ORIGINS?.split(",") || frontendUrl,
-          credentials: true,
-        }
-      : { origin: frontendUrl, credentials: true };
 
   app.use(cors(corsOptions));
 
