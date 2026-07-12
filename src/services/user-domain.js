@@ -38,6 +38,12 @@ class UserDomain {
     if (!user) {
       throw new AppError("User not Found", 400);
     }
+    if (user.provider !== "local" || !user.password) {
+      throw new AppError(
+        `This account uses ${user.provider} sign-in. Please log in with ${user.provider}.`,
+        400,
+      );
+    }
     const validatePassword = await bcrypt.compare(password, user.password);
     if (!validatePassword) {
       throw new AppError("Invalid Credentials", 400);
