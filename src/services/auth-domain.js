@@ -1,5 +1,6 @@
 const AppError = require("../utils/appError");
 const UserRepository = require("../repositories/user.repository");
+const { issueSessionTokens } = require("../utils/issueSessionTokens");
 const {
   generateRefreshToken,
   generateAccessToken,
@@ -38,11 +39,7 @@ class AuthDomain {
   }
 
   async issueTokens(user) {
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-    user.refreshToken = refreshToken;
-    await UserRepository.save(user);
-    return { accessToken, refreshToken };
+    return issueSessionTokens(user, UserRepository);
   }
 }
 

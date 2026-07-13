@@ -3,11 +3,8 @@ const AppError = require("../utils/appError");
 const jwt = require("jsonwebtoken");
 const UserRepository = require("../repositories/user.repository");
 const { BOOKING_STATUS, SEAT_STATUS } = require("../Constants");
-
-const {
-  generateAccessToken,
-  generateRefreshToken,
-} = require("../utils/generateToken");
+const { issueSessionTokens } = require("../utils/issueSessionTokens");
+const { generateRefreshToken } = require("../utils/generateToken");
 
 class UserDomain {
   async registerUser(name, password, email) {
@@ -26,11 +23,7 @@ class UserDomain {
       email,
     });
 
-    const accessToken = generateAccessToken(newUser);
-    const refreshToken = generateRefreshToken(newUser);
-    newUser.refreshToken = refreshToken;
-    await UserRepository.save(newUser);
-    return { accessToken, refreshToken };
+    return issueSessionTokens(newUser, UserRepository);
   }
 
   async userLogin(email, password) {
@@ -48,11 +41,7 @@ class UserDomain {
     if (!validatePassword) {
       throw new AppError("Invalid Credentials", 400);
     }
-    const accessToken = generateAccessToken(user);
-    const refreshToken = generateRefreshToken(user);
-    user.refreshToken = refreshToken;
-    await UserRepository.save(user);
-    return { accessToken, refreshToken };
+    return issueSessionTokens(user, UserRepository);
   }
   async userDelete(id) {
     const user = await UserRepository.findByIdAndDelete(id);

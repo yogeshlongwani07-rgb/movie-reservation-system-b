@@ -2,11 +2,8 @@ const AppError = require("../utils/appError");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const AdminRepository = require("../repositories/admin.repository");
-
-const {
-  generateAccessToken,
-  generateRefreshToken,
-} = require("../utils/generateToken");
+const { issueSessionTokens } = require("../utils/issueSessionTokens");
+const { generateAccessToken } = require("../utils/generateToken");
 
 class AdminDomain {
   async createAdmin(name, password, email, role, passkey) {
@@ -32,11 +29,7 @@ class AdminDomain {
       email,
       role,
     });
-    const accessToken = generateAccessToken(newAdmin);
-    const refreshToken = generateRefreshToken(newAdmin);
-    newAdmin.refreshToken = refreshToken;
-    await AdminRepository.save(newAdmin);
-    return { accessToken, refreshToken };
+    return issueSessionTokens(newAdmin, AdminRepository);
   }
   async loginAdmin(email, password) {
     const admin = await AdminRepository.findByEmail(email);
@@ -47,11 +40,7 @@ class AdminDomain {
     if (!validatePassword) {
       throw new AppError("Invalid Credentials", 400);
     }
-    const accessToken = generateAccessToken(admin);
-    const refreshToken = generateRefreshToken(admin);
-    admin.refreshToken = refreshToken;
-    await AdminRepository.save(admin);
-    return { accessToken, refreshToken };
+    return issueSessionTokens(admin, AdminRepository);
   }
 
   async deleteAdmin(id, session) {

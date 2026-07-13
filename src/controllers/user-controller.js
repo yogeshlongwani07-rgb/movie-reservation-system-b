@@ -1,7 +1,7 @@
 const UserDomain = require("../services/user-domain");
-const mongoose = require("mongoose");
 const AppError = require("../utils/appError");
 const setAuthCookies = require("../utils/setAuthCookies");
+const { withTransaction } = require("../utils/withTrasaction");
 
 async function registerUser(req, res) {
   try {
@@ -112,14 +112,12 @@ async function checkMyBookings(req, res) {
 }
 
 async function cancelBooking(req, res) {
-  let session = await mongoose.startSession();
   try {
-    await session.startTransaction();
     const { bookingId } = req.params;
     const userId = req.user._id;
-    const user = await UserDomain.cancelBooking(bookingId, session, userId);
-
-    await session.commitTransaction();
+    const user = await withTransaction((session) =>
+      UserDomain.cancelBooking(bookingId, session, userId),
+    );
     const { cancelledSeats, refundAmount } = user;
     res.json({
       success: true,
@@ -128,7 +126,6 @@ async function cancelBooking(req, res) {
       refundAmount,
     });
   } catch (err) {
-    await session.abortTransaction();
     if (err instanceof AppError) {
       return res
         .status(err.statusCode)
@@ -139,8 +136,6 @@ async function cancelBooking(req, res) {
       message: "Unexpected Error",
       success: false,
     });
-  } finally {
-    await session.endSession();
   }
 }
 
