@@ -157,18 +157,6 @@ class MovieDomain {
       throw new AppError("Some seats not found", 404);
     }
 
-    // const unavailableSeats = seatToBook.filter((s) => {
-    //   if (s.status === SEAT_STATUS.AVAILABLE) {
-    //     return false;
-    //   }
-
-    //   if (s.status === SEAT_STATUS.LOCKED && s.lockedBy?.equals(userId)) {
-    //     return false;
-    //   }
-
-    //   return true;
-    // });
-
     const unavailableSeats = seatToBook.filter(
       (seat) => seat.status !== SEAT_STATUS.AVAILABLE,
     );

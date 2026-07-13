@@ -2,7 +2,7 @@ const AdminDomain = require("../services/admin-domain");
 const AppError = require("../utils/appError");
 const asyncHandler = require("../utils/asyncHandler");
 const setAuthCookies = require("../utils/setAuthCookies");
-const { withTransaction } = require("../utils/withTrasaction");
+const { withTransaction } = require("../utils/withTransaction");
 
 const registerAdmin = asyncHandler(async (req, res) => {
   let { name, password, email, role, passkey } = req.body;

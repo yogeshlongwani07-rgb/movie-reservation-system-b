@@ -3,7 +3,7 @@ const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const { BOOKING_STATUS } = require("../Constants");
 const { emitToShow } = require("../socket/socketManager");
-const { withTransaction } = require("../utils/withTrasaction");
+const { withTransaction } = require("../utils/withTransaction");
 const asyncHandler = require("../utils/asyncHandler");
 
 const createMovie = asyncHandler(async (req, res) => {
