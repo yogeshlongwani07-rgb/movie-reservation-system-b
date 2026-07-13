@@ -1,9 +1,7 @@
 const AppError = require("../utils/appError");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const AdminRepository = require("../repositories/admin.repository");
 const { issueSessionTokens } = require("../utils/issueSessionTokens");
-const { generateAccessToken } = require("../utils/generateToken");
 const { logout, refreshAccessToken } = require("../utils/authFlows");
 
 class AdminDomain {

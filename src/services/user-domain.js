@@ -1,10 +1,8 @@
 const bcrypt = require("bcrypt");
 const AppError = require("../utils/appError");
-const jwt = require("jsonwebtoken");
 const UserRepository = require("../repositories/user.repository");
 const { BOOKING_STATUS, SEAT_STATUS } = require("../Constants");
 const { issueSessionTokens } = require("../utils/issueSessionTokens");
-const { generateAccessToken } = require("../utils/generateToken");
 const { logout, refreshAccessToken } = require("../utils/authFlows");
 
 class UserDomain {
