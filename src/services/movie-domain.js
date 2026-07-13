@@ -74,6 +74,9 @@ class MovieDomain {
       session,
     );
 
+    if (!admin) {
+      throw new AppError("Admin not Found", 404);
+    }
     admin.movies = admin.movies.filter((movie) => {
       return movie.toString() !== id;
     });

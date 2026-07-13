@@ -4,7 +4,7 @@ const jwt = require("jsonwebtoken");
 const UserRepository = require("../repositories/user.repository");
 const { BOOKING_STATUS, SEAT_STATUS } = require("../Constants");
 const { issueSessionTokens } = require("../utils/issueSessionTokens");
-const { generateRefreshToken } = require("../utils/generateToken");
+const { generateAccessToken } = require("../utils/generateToken");
 
 class UserDomain {
   async registerUser(name, password, email) {
