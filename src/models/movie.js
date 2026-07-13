@@ -139,5 +139,10 @@ const movieSchema = new mongoose.Schema(
   { timestamps: true },
 );
 
+// movieSchema.index({
+//   "shows.date": 1,
+//   "shows.showTime": 1,
+// });
+
 const Movie = mongoose.model("Movie", movieSchema);
 module.exports = Movie;

@@ -13,7 +13,7 @@ class MovieRepository extends BaseRepository {
     });
   }
   async findMovies(limit, skip) {
-    return await Movie.find({}).skip(skip).limit(limit);
+    return await Movie.find({}).skip(skip).limit(limit).sort({ createdAt: -1 });
   }
 
   async findByIdWithSessionAndAdmin(id, session) {
