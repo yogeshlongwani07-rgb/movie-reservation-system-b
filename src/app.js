@@ -9,6 +9,7 @@ const movieListingRoutes = require("./routes/movie");
 const userRoutes = require("./routes/user");
 const authRoutes = require("./routes/auth");
 const corsOptions = require("./Constants");
+const errorHandler = require("../src/middleware/errorHandler");
 
 function createApp() {
   const app = express();
@@ -41,7 +42,7 @@ function createApp() {
       message: `Route '${req.originalUrl}' not found`,
     });
   });
-
+  app.use(errorHandler);
   return app;
 }
 
