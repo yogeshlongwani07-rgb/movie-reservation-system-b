@@ -1,3 +1,8 @@
+const {
+  generateAccessToken,
+  generateRefreshToken,
+} = require("../utils/generateToken");
+
 async function issueSessionTokens(doc, repository) {
   const accessToken = generateAccessToken(doc);
   const refreshToken = generateRefreshToken(doc);
