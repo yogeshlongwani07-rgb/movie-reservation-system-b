@@ -3,6 +3,7 @@ const AppError = require("../utils/appError");
 const mongoose = require("mongoose");
 const { BOOKING_STATUS } = require("../Constants");
 const { emitToShow } = require("../socket/socketManager");
+const { withTransaction } = require("../utils/withTrasaction");
 
 async function createMovie(req, res) {
   try {
@@ -57,25 +58,20 @@ async function updateMovie(req, res) {
 }
 
 async function deleteMovie(req, res) {
-  const session = await mongoose.startSession();
   try {
-    await session.startTransaction();
     const { id } = req.params;
-    const movie = await MovieDomain.deleteMovie(id, req.user._id, session);
-    await session.commitTransaction();
+    await withTransaction((session) =>
+      MovieDomain.deleteMovie(id, req.user._id, session),
+    );
     res.json({ message: "Movie Deleted", success: true });
   } catch (err) {
     if (err instanceof AppError) {
-      await session.abortTransaction();
       return res
         .status(err.statusCode)
         .json({ message: err.message, success: false });
     }
-    await session.abortTransaction();
     console.log("error", err);
     res.status(500).json({ message: "Unexpected Error", success: false });
-  } finally {
-    await session.endSession();
   }
 }
 
@@ -130,22 +126,13 @@ async function checkMovieShow(req, res) {
 }
 
 async function holdSeats(req, res) {
-  const session = await mongoose.startSession();
-
   try {
-    session.startTransaction();
     const movieId = req.params.id;
     const showId = req.params.showId;
     const seats = req.body.seatNumber;
-    const ticket = await MovieDomain.holdSeat(
-      movieId,
-      showId,
-      seats,
-      req.user._id,
-      session,
+    const ticket = await withTransaction((session) =>
+      MovieDomain.holdSeat(movieId, showId, seats, req.user._id, session),
     );
-    await session.commitTransaction();
-
     emitToShow(movieId, showId, "seat:held", { seats: ticket.bookingSeats });
 
     res.status(200).json({
@@ -155,37 +142,23 @@ async function holdSeats(req, res) {
     });
   } catch (err) {
     if (err instanceof AppError) {
-      await session.abortTransaction();
-
       return res
         .status(err.statusCode)
         .json({ message: err.message, success: false });
     }
-    await session.abortTransaction();
     console.log("error", err);
     res.status(500).json({ message: "Unexpected Error", success: false });
-  } finally {
-    await session.endSession();
   }
 }
 
 async function bookSeat(req, res) {
-  const session = await mongoose.startSession();
-
   try {
-    session.startTransaction();
     const movieId = req.params.id;
     const showId = req.params.showId;
     const seats = req.body.seatNumber;
-    const ticket = await MovieDomain.bookSeat(
-      movieId,
-      showId,
-      seats,
-      req.user._id,
-      session,
+    const ticket = await withTransaction((session) =>
+      MovieDomain.bookSeat(movieId, showId, seats, req.user._id, session),
     );
-    await session.commitTransaction();
-
     emitToShow(movieId, showId, "seat:booked", { seats: ticket.bookingSeats });
 
     res.status(200).json({
@@ -202,17 +175,12 @@ async function bookSeat(req, res) {
     });
   } catch (err) {
     if (err instanceof AppError) {
-      await session.abortTransaction();
-
       return res
         .status(err.statusCode)
         .json({ message: err.message, success: false });
     }
-    await session.abortTransaction();
     console.log("error", err);
     res.status(500).json({ message: "Unexpected Error", success: false });
-  } finally {
-    await session.endSession();
   }
 }
 

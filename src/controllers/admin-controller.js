@@ -1,7 +1,7 @@
 const AdminDomain = require("../services/admin-domain");
 const AppError = require("../utils/appError");
-const mongoose = require("mongoose");
 const setAuthCookies = require("../utils/setAuthCookies");
+const { withTransaction } = require("../utils/withTrasaction");
 
 async function registerAdmin(req, res) {
   try {
@@ -53,13 +53,9 @@ async function loginAdmin(req, res) {
 }
 
 async function deleteAdmin(req, res) {
-  const session = await mongoose.startSession();
   try {
-    await session.startTransaction();
     let id = req.user._id;
-    const admin = await AdminDomain.deleteAdmin(id, session);
-
-    await session.commitTransaction();
+    await withTransaction((session) => AdminDomain.deleteAdmin(id, session));
     res.clearCookie("accessToken");
     res.clearCookie("refreshToken");
     res.json({
@@ -68,19 +64,15 @@ async function deleteAdmin(req, res) {
     });
   } catch (err) {
     if (err instanceof AppError) {
-      await session.abortTransaction();
       return res
         .status(err.statusCode)
         .json({ message: err.message, success: false });
     }
-    await session.abortTransaction();
     console.log("error", err);
     return res.status(500).json({
       message: "Unexpected Error",
       success: false,
     });
-  } finally {
-    await session.endSession();
   }
 }
 async function getMyProfile(req, res) {
