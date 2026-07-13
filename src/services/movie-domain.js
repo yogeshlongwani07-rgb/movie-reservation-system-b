@@ -9,7 +9,7 @@ const crypto = require("crypto");
 class MovieDomain {
   async create(body, userId) {
     if (!body.shows || !Array.isArray(body.shows)) {
-      throw new AppError("Atleast one Show required in correct format", 402);
+      throw new AppError("Atleast one Show required in correct format", 400);
     }
 
     const newBody = {

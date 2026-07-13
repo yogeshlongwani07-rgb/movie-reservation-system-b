@@ -12,7 +12,7 @@ async function refreshAccessToken(refreshToken, repository) {
     throw new AppError("User not Found", 400);
   }
   if (account.refreshToken !== refreshToken) {
-    throw new AppError("Invalid refresh token", 405);
+    throw new AppError("Invalid refresh token", 401);
   }
   const accessToken = generateAccessToken(account);
   return accessToken;
@@ -21,7 +21,7 @@ async function refreshAccessToken(refreshToken, repository) {
 async function logout(id, repository) {
   const account = await repository.findById(id);
   if (!account) {
-    throw new AppError("User not found", 405);
+    throw new AppError("User not found", 404);
   }
 
   account.refreshToken = null;

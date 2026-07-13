@@ -1,5 +1,4 @@
 const AuthDomain = require("../services/auth-domain");
-const AppError = require("../utils/appError");
 const asyncHandler = require("../utils/asyncHandler");
 const setAuthCookies = require("../utils/setAuthCookies");
 

@@ -1,5 +1,4 @@
 const AdminDomain = require("../services/admin-domain");
-const AppError = require("../utils/appError");
 const asyncHandler = require("../utils/asyncHandler");
 const setAuthCookies = require("../utils/setAuthCookies");
 const { withTransaction } = require("../utils/withTransaction");
@@ -63,7 +62,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 const logout = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
-  const response = await AdminDomain.logout(adminId);
+  await AdminDomain.logout(adminId);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({
