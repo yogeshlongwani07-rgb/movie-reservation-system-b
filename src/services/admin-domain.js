@@ -1,9 +1,8 @@
 const AppError = require("../utils/appError");
 const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
 const AdminRepository = require("../repositories/admin.repository");
 const { issueSessionTokens } = require("../utils/issueSessionTokens");
-const { generateAccessToken } = require("../utils/generateToken");
+const { logout, refreshAccessToken } = require("../utils/authFlows");
 
 class AdminDomain {
   async createAdmin(name, password, email, role, passkey) {
@@ -71,29 +70,11 @@ class AdminDomain {
     return admin;
   }
   async makeFreshAccessToken(refreshToken) {
-    if (!refreshToken) {
-      throw new AppError("Refresh token Not Found", 400);
-    }
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const admin = await AdminRepository.findById(decoded._id);
-    if (!admin) {
-      throw new AppError("Admin not Found", 400);
-    }
-    if (admin.refreshToken !== refreshToken) {
-      throw new AppError("Invalid refresh token", 405);
-    }
-    const accessToken = generateAccessToken(admin);
-    return accessToken;
+    return refreshAccessToken(refreshToken, AdminRepository);
   }
 
   async logout(adminId) {
-    const admin = await AdminRepository.findById(adminId);
-    if (!admin) {
-      throw new AppError("Admin not found", 405);
-    }
-
-    admin.refreshToken = null;
-    await AdminRepository.save(admin);
+    return logout(adminId, AdminRepository);
   }
 }
 

@@ -1,8 +1,7 @@
 const UserDomain = require("../services/user-domain");
-const AppError = require("../utils/appError");
 const asyncHandler = require("../utils/asyncHandler");
 const setAuthCookies = require("../utils/setAuthCookies");
-const { withTransaction } = require("../utils/withTrasaction");
+const { withTransaction } = require("../utils/withTransaction");
 
 const registerUser = asyncHandler(async (req, res) => {
   let { name, password, email } = req.body;
@@ -26,7 +25,7 @@ const loginUser = asyncHandler(async (req, res) => {
 
 const deleteUser = asyncHandler(async (req, res) => {
   let id = req.user._id;
-  const user = await UserDomain.userDelete(id);
+  await UserDomain.userDelete(id);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({
@@ -76,7 +75,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 
 const logout = asyncHandler(async (req, res) => {
   let userId = req.user._id;
-  let response = await UserDomain.logout(userId);
+  await UserDomain.logout(userId);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({

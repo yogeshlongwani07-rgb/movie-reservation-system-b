@@ -1,9 +1,7 @@
 const MovieDomain = require("../services/movie-domain");
-const AppError = require("../utils/appError");
-const mongoose = require("mongoose");
 const { BOOKING_STATUS } = require("../Constants");
 const { emitToShow } = require("../socket/socketManager");
-const { withTransaction } = require("../utils/withTrasaction");
+const { withTransaction } = require("../utils/withTransaction");
 const asyncHandler = require("../utils/asyncHandler");
 
 const createMovie = asyncHandler(async (req, res) => {
@@ -28,7 +26,7 @@ const updateMovie = asyncHandler(async (req, res) => {
   if (req.file) {
     req.body.poster = req.file.path;
   }
-  const movie = await MovieDomain.updateMovie(id, req.user._id, req.body);
+  await MovieDomain.updateMovie(id, req.user._id, req.body);
 
   res.json({ message: "Movie Updated", success: true });
 });

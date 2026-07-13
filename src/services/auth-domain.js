@@ -1,10 +1,6 @@
 const AppError = require("../utils/appError");
 const UserRepository = require("../repositories/user.repository");
 const { issueSessionTokens } = require("../utils/issueSessionTokens");
-const {
-  generateRefreshToken,
-  generateAccessToken,
-} = require("../utils/generateToken");
 
 class AuthDomain {
   async findOrCreateGoogleUser(profile) {

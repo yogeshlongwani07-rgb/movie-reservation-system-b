@@ -8,7 +8,7 @@ const adminRoutes = require("./routes/admin");
 const movieListingRoutes = require("./routes/movie");
 const userRoutes = require("./routes/user");
 const authRoutes = require("./routes/auth");
-const corsOptions = require("./Constants");
+const { corsOptions } = require("./Constants");
 const errorHandler = require("../src/middleware/errorHandler");
 
 function createApp() {
