@@ -1,0 +1,15 @@
+CREATE TABLE IF NOT EXISTS payments(
+    id not null auto_increment,
+    payment_uuid char(36) not null,
+    booking_id VARCHAR(64) NOT NULL,
+    user_id VARCHAR(64) NOT NULL,
+    user_name_snapshot VARCHAR(150) NOT NULL,
+    admin_id VARCHAR(64) DEFAULT NULL,
+    amount DECIMAL(10,2) NOT NULL,
+    currency VARCHAR(10) NOT NULL DEFAULT 'INR',
+    status ENUM('INITIATED', 'PENDING', 'SUCCESS', 'FAILED', 'REFUNDED') NOT NULL DEFAULT 'INITIATED',
+    payment_method VARCHAR(50) DEFAULT NULL,
+    refunded_at TIMESTAMP NULL DEFAULT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+)

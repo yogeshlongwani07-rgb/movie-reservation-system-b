@@ -2,6 +2,7 @@ require("dotenv").config();
 const http = require("http");
 const mongoose = require("mongoose");
 const { startLockCleanupJob } = require("./src/jobs/lockCleanup.job");
+const createMysqlPool = require("./src/config/mysql");
 
 const createApp = require("./src/app");
 const connectToMongo = require("./src/config/mongo");
@@ -24,6 +25,7 @@ let server;
 let cleanupJob;
 async function startServer() {
   await connectToMongo();
+  await createMysqlPool();
 
   const app = createApp();
   const port = process.env.PORT || 3000;
