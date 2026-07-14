@@ -3,10 +3,10 @@ const createMysqlPool = require("../config/mysql");
 
 class PaymentRepository {
   async createPayment(data) {
-    const pool = getMysqlPool();
+    const pool = createMysqlPool();
     const paymentUuid = randomUUID();
 
-    const [result] = pool.execute(
+    const [result] = await pool.execute(
       `INSERT INTO payments
         (payment_uuid, booking_id, user_id, user_name_snapshot, admin_id, amount, currency, status, payment_method, refunded_at)
         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
@@ -27,3 +27,5 @@ class PaymentRepository {
     return { id: result.insertId, paymentUuid };
   }
 }
+
+module.exports = new PaymentRepository();

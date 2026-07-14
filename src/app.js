@@ -8,9 +8,9 @@ const adminRoutes = require("./routes/admin");
 const movieListingRoutes = require("./routes/movie");
 const userRoutes = require("./routes/user");
 const authRoutes = require("./routes/auth");
+const paymentRoutes = require("./routes/payment");
 const { corsOptions } = require("./Constants");
 const errorHandler = require("../src/middleware/errorHandler");
-
 
 function createApp() {
   const app = express();
@@ -32,6 +32,7 @@ function createApp() {
   app.use("/api/v1/movie", movieListingRoutes);
   app.use("/api/v1/user", userRoutes);
   app.use("/api/v1/auth", authRoutes);
+  app.use("/api/v1/payment", paymentRoutes);
 
   app.get("/", (req, res) => {
     res.status(200).json({ message: "All Set" });
