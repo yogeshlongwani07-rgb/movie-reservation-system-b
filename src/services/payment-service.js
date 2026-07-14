@@ -45,27 +45,6 @@ class PaymentService {
     }
     return payment;
   }
-
-  async updatePaymentStatus(bookingId, status) {
-    const allowedStatuses = [
-      "INITIATED",
-      "PENDING",
-      "SUCCESS",
-      "FAILED",
-      "REFUNDED",
-    ];
-    if (!allowedStatuses.includes(status)) {
-      throw new AppError("Invalid payment status", 400);
-    }
-    const updated = await PaymentRepository.updateStatusByBookingId(
-      bookingId.toString(),
-      status,
-    );
-    if (!updated) {
-      throw new AppError("Payment not found for this booking", 404);
-    }
-    return true;
-  }
 }
 
 module.exports = new PaymentService();

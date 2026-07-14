@@ -1,4 +1,4 @@
-const MovieDomain = require("../services/movie-domain");
+const MovieDomain = require("../services/movie-service");
 const { BOOKING_STATUS } = require("../Constants");
 const { emitToShow } = require("../socket/socketManager");
 const { withTransaction } = require("../utils/withTransaction");
