@@ -35,15 +35,6 @@ class PaymentRepository {
     );
     return rows[0] || null;
   }
-
-  async updateStatusByBookingId(bookingId, status) {
-    const pool = createMysqlPool();
-    const [result] = await pool.execute(
-      `UPDATE payments SET status = ? WHERE booking_id = ?`,
-      [status, bookingId],
-    );
-    return result.affectedRows > 0;
-  }
 }
 
 module.exports = new PaymentRepository();
