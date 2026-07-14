@@ -284,6 +284,8 @@ class MovieDomain {
     await MovieRepository.saveWithSession(movie, session);
 
     return {
+      bookingId: existingHold._id,
+      userName: user.name,
       bookingSeats: existingHold.seats,
       totalPrice: existingHold.totalPrice,
       qr,
