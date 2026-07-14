@@ -3,6 +3,7 @@ const { BOOKING_STATUS } = require("../Constants");
 const { emitToShow } = require("../socket/socketManager");
 const { withTransaction } = require("../utils/withTransaction");
 const asyncHandler = require("../utils/asyncHandler");
+const PaymentService = require("../services/payment-service");
 
 const createMovie = asyncHandler(async (req, res) => {
   if (req.file) {
@@ -84,6 +85,22 @@ const bookSeat = asyncHandler(async (req, res) => {
   );
   emitToShow(movieId, showId, "seat:booked", { seats: ticket.bookingSeats });
 
+  //sql payment
+  let payment = null;
+  try {
+    payment = await PaymentService.recordSuccessfulPayment({
+      bookingId: ticket.bookingId,
+      userId: req.user._id,
+      userName: ticket.userName,
+      amount: ticket.totalPrice,
+    });
+  } catch (err) {
+    console.error("Failed to record payment for booking", {
+      bookingId: ticket.bookingId?.toString(),
+      error: err.message,
+    });
+  }
+
   res.status(200).json({
     message: "Seat booked successfully",
     success: true,
@@ -95,6 +112,12 @@ const bookSeat = asyncHandler(async (req, res) => {
       status: BOOKING_STATUS.CONFIRMED,
       qr: ticket.qr,
     },
+    payment: payment
+      ? {
+          paymentUuid: payment.paymentUuid,
+          status: "SUCCESS",
+        }
+      : { status: "PENDING_RECORD" },
   });
 });
 

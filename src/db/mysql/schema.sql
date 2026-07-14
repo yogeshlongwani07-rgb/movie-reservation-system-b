@@ -1,7 +1,7 @@
-CREATE TABLE IF NOT EXISTS payments(
-    id int not null auto_increment,
-    payment_uuid  UNIQUE KEY char(36) not null,
-    booking_id UNIQUE KEY VARCHAR(64) NOT NULL,
+CREATE TABLE IF NOT EXISTS payments (
+    id INT NOT NULL AUTO_INCREMENT,
+    payment_uuid CHAR(36) NOT NULL,
+    booking_id VARCHAR(64) NOT NULL,
     user_id VARCHAR(64) NOT NULL,
     user_name_snapshot VARCHAR(150) NOT NULL,
     admin_id VARCHAR(64) DEFAULT NULL,
@@ -11,5 +11,9 @@ CREATE TABLE IF NOT EXISTS payments(
     payment_method VARCHAR(50) DEFAULT NULL,
     refunded_at TIMESTAMP NULL DEFAULT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_payments_payment_uuid (payment_uuid),
+    UNIQUE KEY uq_payments_booking_id (booking_id),
+    KEY idx_payments_user_id (user_id),
+    KEY idx_payments_status (status)
 )

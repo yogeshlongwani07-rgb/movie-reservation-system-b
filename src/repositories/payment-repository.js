@@ -26,6 +26,24 @@ class PaymentRepository {
     );
     return { id: result.insertId, paymentUuid };
   }
+
+  async findByBookingId(bookingId) {
+    const pool = createMysqlPool();
+    const [rows] = await pool.execute(
+      `SELECT * FROM payments WHERE booking_id = ? LIMIT 1`,
+      [bookingId],
+    );
+    return rows[0] || null;
+  }
+
+  async updateStatusByBookingId(bookingId, status) {
+    const pool = createMysqlPool();
+    const [result] = await pool.execute(
+      `UPDATE payments SET status = ? WHERE booking_id = ?`,
+      [status, bookingId],
+    );
+    return result.affectedRows > 0;
+  }
 }
 
 module.exports = new PaymentRepository();
