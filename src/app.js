@@ -11,6 +11,7 @@ const authRoutes = require("./routes/auth");
 const { corsOptions } = require("./Constants");
 const errorHandler = require("../src/middleware/errorHandler");
 
+
 function createApp() {
   const app = express();
 
