@@ -1,4 +1,4 @@
-const UserDomain = require("../services/user-domain");
+const UserDomain = require("../services/user-service");
 const asyncHandler = require("../utils/asyncHandler");
 const setAuthCookies = require("../utils/setAuthCookies");
 const { withTransaction } = require("../utils/withTransaction");
