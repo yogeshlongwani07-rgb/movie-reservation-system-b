@@ -46,7 +46,7 @@ async function shutdownServer(signal) {
   }
   if (server) {
     const forceShutdownTimeout = setTimeout(() => {
-      console.error("Forcefully shutting down server after 10 seconds");
+      console.error("Forcefully shutting down server after 3 seconds");
       process.exit(1);
     }, 3000);
 
