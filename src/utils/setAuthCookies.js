@@ -3,14 +3,14 @@ const { FIFTEEN_MINUTES_MS, SEVEN_DAYS_MS } = require("../Constants");
 const accessCookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
+  sameSite: "none",
   maxAge: FIFTEEN_MINUTES_MS,
 };
 
 const refreshCookieOptions = {
   httpOnly: true,
   secure: process.env.NODE_ENV === "production",
-  sameSite: "strict",
+  sameSite: "none",
   maxAge: SEVEN_DAYS_MS,
 };
 
