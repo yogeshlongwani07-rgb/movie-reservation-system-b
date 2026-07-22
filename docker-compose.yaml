@@ -2,6 +2,7 @@ version: "3.9"
 
 services:
   myapp:
+    build: .
     image: movie-reservation
     container_name: myapp
     env_file:
