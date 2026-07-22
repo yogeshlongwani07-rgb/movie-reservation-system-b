@@ -35,7 +35,7 @@ function createApp() {
   app.use("/api/v1/payment", paymentRoutes);
 
   app.get("/", (req, res) => {
-    res.status(200).json({ message: "All Set" });
+    res.status(200).json({ message: "Good Health" });
   });
 
   app.use((req, res) => {
