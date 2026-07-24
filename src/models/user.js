@@ -50,6 +50,7 @@ const bookingSchema = new mongoose.Schema(
     tickettoken: {
       type: String,
       unique: true,
+      sparse: true,
     },
     cancelledAt: {
       type: Date,
