@@ -12,7 +12,7 @@ const createMovie = asyncHandler(async (req, res) => {
   await withTransaction((session) =>
     MovieDomain.createWithTransaction(req.body, req.user._id, session),
   );
-  res.status(201).json({ message: "Movie added", success: true });
+  res.status(201).json({ message: "Movie added successfully", success: true });
 });
 
 const getAllMovies = asyncHandler(async (req, res) => {
@@ -30,7 +30,7 @@ const updateMovie = asyncHandler(async (req, res) => {
   }
   await MovieDomain.updateMovie(id, req.user._id, req.body);
 
-  res.json({ message: "Movie Updated", success: true });
+  res.json({ message: "Movie Updated successfully", success: true });
 });
 
 const deleteMovie = asyncHandler(async (req, res) => {
@@ -38,7 +38,7 @@ const deleteMovie = asyncHandler(async (req, res) => {
   await withTransaction((session) =>
     MovieDomain.deleteMovie(id, req.user._id, session),
   );
-  res.json({ message: "Movie Deleted", success: true });
+  res.json({ message: "Movie Deleted successfully", success: true });
 });
 
 const movieByDate = asyncHandler(async (req, res) => {
