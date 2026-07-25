@@ -14,7 +14,7 @@ const registerAdmin = asyncHandler(async (req, res) => {
   );
   const { accessToken, refreshToken } = admin;
   setAuthCookies(res, accessToken, refreshToken);
-  res.status(201).json({ message: "Account Created", success: true });
+  res.status(201).json({ message: "Account Created successfully", success: true });
 });
 
 const loginAdmin = asyncHandler(async (req, res) => {
