@@ -7,39 +7,40 @@ const QRCode = require("qrcode");
 const crypto = require("crypto");
 
 class MovieDomain {
-  async create(body, userId) {
-    if (!body.shows || !Array.isArray(body.shows)) {
-      throw new AppError("Atleast one Show required in correct format", 400);
-    }
 
-    const newBody = {
-      ...body,
-      shows: body.shows?.map((show) => {
-        const seats = generateSeats(
-          show.layout?.rows || 10,
-          show.layout?.columns || 15,
-        );
-
-        return {
-          ...show,
-          seats,
-          totalSeats: seats.length,
-          availableSeats: seats.length,
-          occupiedSeats: 0,
-          lockedSeats: 0,
-        };
-      }),
-    };
-
-    const listing = await MovieRepository.create({
-      ...newBody,
-      createdBy: userId,
-    });
-    return listing;
+  async createWithTransaction(body, userId, session) {
+  if (!body.shows || !Array.isArray(body.shows)) {
+    throw new AppError("Atleast one Show required in correct format", 400);
   }
-  async pushMovieToAdmin(userId, movieId) {
-    await MovieRepository.findByIdAndUpdate(userId, movieId);
-  }
+
+  const newBody = {
+    ...body,
+    shows: body.shows?.map((show) => {
+      const seats = generateSeats(
+        show.layout?.rows || 10,
+        show.layout?.columns || 15,
+      );
+
+      return {
+        ...show,
+        seats,
+        totalSeats: seats.length,
+        availableSeats: seats.length,
+        occupiedSeats: 0,
+        lockedSeats: 0,
+      };
+    }),
+  };
+
+  const listing = await MovieRepository.createWithSession({
+    ...newBody,
+    createdBy: userId,
+  }, session);
+
+  await MovieRepository.findByIdAndUpdateWithSession(userId, listing._id, session);
+
+  return listing;
+}
   async allMovies(limit, skip) {
     const movie = await MovieRepository.findMovies(limit, skip);
     return movie;

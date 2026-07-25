@@ -7,6 +7,19 @@ class MovieRepository extends BaseRepository {
   constructor() {
     super(Movie);
   }
+
+  async findByIdAndUpdateWithSession(id, movieId, session) {
+  return await Admin.findByIdAndUpdate(
+    id,
+    { $push: { movies: movieId } },
+    { session } 
+  );
+}
+
+async createWithSession(movieData, session) {
+  const movie = new Movie(movieData);
+  return await movie.save({ session }); 
+}
   async findByIdAndUpdate(id, movieId) {
     return await Admin.findByIdAndUpdate(id, {
       $push: { movies: movieId },

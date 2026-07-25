@@ -10,7 +10,7 @@ const registerUser = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = user;
   setAuthCookies(res, accessToken, refreshToken);
 
-  res.status(201).json({ message: "Account Created", success: true });
+  res.status(201).json({ message: "Account Created successfully", success: true });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -20,7 +20,7 @@ const loginUser = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = user;
   setAuthCookies(res, accessToken, refreshToken);
 
-  res.status(200).json({ message: "Your are Login!", success: true });
+  res.status(200).json({ message: "Login successfully", success: true });
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
