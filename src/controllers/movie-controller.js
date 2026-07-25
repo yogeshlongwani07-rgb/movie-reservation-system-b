@@ -9,8 +9,9 @@ const createMovie = asyncHandler(async (req, res) => {
   if (req.file) {
     req.body.poster = req.file.path;
   }
-  const listing = await MovieDomain.create(req.body, req.user._id);
-  await MovieDomain.pushMovieToAdmin(req.user._id, listing._id);
+  await withTransaction((session) =>
+    MovieDomain.createWithTransaction(req.body, req.user._id, session),
+  );
   res.status(201).json({ message: "Movie added", success: true });
 });
 
