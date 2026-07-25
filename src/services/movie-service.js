@@ -9,7 +9,7 @@ const crypto = require("crypto");
 class MovieDomain {
   async create(body, userId) {
     if (!body.shows || !Array.isArray(body.shows)) {
-      throw new AppError("Atleast one Show required in correct format", 402);
+      throw new AppError("Atleast one Show required in correct format", 400);
     }
 
     const newBody = {
@@ -74,6 +74,9 @@ class MovieDomain {
       session,
     );
 
+    if (!admin) {
+      throw new AppError("Admin not Found", 404);
+    }
     admin.movies = admin.movies.filter((movie) => {
       return movie.toString() !== id;
     });
@@ -154,18 +157,6 @@ class MovieDomain {
       throw new AppError("Some seats not found", 404);
     }
 
-    // const unavailableSeats = seatToBook.filter((s) => {
-    //   if (s.status === SEAT_STATUS.AVAILABLE) {
-    //     return false;
-    //   }
-
-    //   if (s.status === SEAT_STATUS.LOCKED && s.lockedBy?.equals(userId)) {
-    //     return false;
-    //   }
-
-    //   return true;
-    // });
-
     const unavailableSeats = seatToBook.filter(
       (seat) => seat.status !== SEAT_STATUS.AVAILABLE,
     );
@@ -196,7 +187,7 @@ class MovieDomain {
       movie: movieId,
       status: BOOKING_STATUS.HOLD,
       seats: bookingSeats,
-      holdExpiresAt: new Date(Date.now() + 5 * 60 * 1000),
+      holdExpiresAt: new Date(Date.now() + 10 * 60 * 1000),
       showId: showId,
       totalPrice,
     });
@@ -293,6 +284,8 @@ class MovieDomain {
     await MovieRepository.saveWithSession(movie, session);
 
     return {
+      bookingId: existingHold._id,
+      userName: user.name,
       bookingSeats: existingHold.seats,
       totalPrice: existingHold.totalPrice,
       qr,

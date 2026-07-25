@@ -8,7 +8,9 @@ const adminRoutes = require("./routes/admin");
 const movieListingRoutes = require("./routes/movie");
 const userRoutes = require("./routes/user");
 const authRoutes = require("./routes/auth");
-const corsOptions = require("./Constants");
+const paymentRoutes = require("./routes/payment");
+const { corsOptions } = require("./Constants");
+const errorHandler = require("../src/middleware/errorHandler");
 
 function createApp() {
   const app = express();
@@ -30,9 +32,10 @@ function createApp() {
   app.use("/api/v1/movie", movieListingRoutes);
   app.use("/api/v1/user", userRoutes);
   app.use("/api/v1/auth", authRoutes);
+  app.use("/api/v1/payment", paymentRoutes);
 
   app.get("/", (req, res) => {
-    res.status(200).json({ message: "All Set" });
+    res.status(200).json({ message: "Let Set Go" });
   });
 
   app.use((req, res) => {
@@ -41,7 +44,7 @@ function createApp() {
       message: `Route '${req.originalUrl}' not found`,
     });
   });
-
+  app.use(errorHandler);
   return app;
 }
 

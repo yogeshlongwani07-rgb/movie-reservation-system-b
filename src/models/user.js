@@ -50,6 +50,7 @@ const bookingSchema = new mongoose.Schema(
     tickettoken: {
       type: String,
       unique: true,
+      sparse: true,
     },
     cancelledAt: {
       type: Date,
@@ -117,6 +118,10 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   },
 );
+
+// userSchema.index({
+//   email: 1,
+// });
 
 const User = mongoose.model("User", userSchema);
 

@@ -1,10 +1,11 @@
 const Admin = require("../models/admin");
 const Movie = require("../models/movie");
 const User = require("../models/user");
+const BaseRepository = require("./base.repository");
 
-class MovieRepository {
-  async create(data) {
-    return await Movie.create(data);
+class MovieRepository extends BaseRepository {
+  constructor() {
+    super(Movie);
   }
   async findByIdAndUpdate(id, movieId) {
     return await Admin.findByIdAndUpdate(id, {
@@ -12,17 +13,9 @@ class MovieRepository {
     });
   }
   async findMovies(limit, skip) {
-    return await Movie.find({}).skip(skip).limit(limit);
+    return await Movie.find({}).skip(skip).limit(limit).sort({ createdAt: -1 });
   }
-  async findById(id) {
-    return await Movie.findById(id);
-  }
-  async save(data) {
-    return await data.save();
-  }
-  async findByIdWithSession(id, session) {
-    return await Movie.findById(id).session(session);
-  }
+
   async findByIdWithSessionAndAdmin(id, session) {
     return await Admin.findById(id).session(session);
   }
@@ -47,9 +40,6 @@ class MovieRepository {
   }
   async findByIdWithSessionAndUser(id, session) {
     return await User.findById(id).session(session);
-  }
-  async saveWithSession(data, session) {
-    return await data.save({ session });
   }
 }
 

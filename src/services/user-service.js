@@ -1,10 +1,9 @@
 const bcrypt = require("bcrypt");
 const AppError = require("../utils/appError");
-const jwt = require("jsonwebtoken");
 const UserRepository = require("../repositories/user.repository");
 const { BOOKING_STATUS, SEAT_STATUS } = require("../Constants");
 const { issueSessionTokens } = require("../utils/issueSessionTokens");
-const { generateRefreshToken } = require("../utils/generateToken");
+const { logout, refreshAccessToken } = require("../utils/authFlows");
 
 class UserDomain {
   async registerUser(name, password, email) {
@@ -114,28 +113,11 @@ class UserDomain {
   }
 
   async makeFreshAccessToken(refreshToken) {
-    if (!refreshToken) {
-      throw new AppError("Refresh token Not Found", 400);
-    }
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
-    const user = await UserRepository.findById(decoded._id);
-    if (!user) {
-      throw new AppError("User not Found", 400);
-    }
-    if (user.refreshToken !== refreshToken) {
-      throw new AppError("Invalid refresh token", 405);
-    }
-    const accessToken = generateAccessToken(user);
-    return accessToken;
+    return refreshAccessToken(refreshToken, UserRepository);
   }
 
   async logout(userId) {
-    const user = await UserRepository.findById(userId);
-    if (!user) {
-      throw new AppError("User not found", 405);
-    }
-    user.refreshToken = null;
-    await UserRepository.save(user);
+    return logout(userId, UserRepository);
   }
 }
 
