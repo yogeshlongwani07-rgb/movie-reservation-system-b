@@ -6,7 +6,6 @@
 ![Express](https://img.shields.io/badge/Express.js-Backend-black?style=for-the-badge&logo=express)
 ![MongoDB](https://img.shields.io/badge/MongoDB-Database-green?style=for-the-badge&logo=mongodb)
 ![JWT](https://img.shields.io/badge/JWT-Authentication-orange?style=for-the-badge)
-![License](https://img.shields.io/badge/License-MIT-blue?style=for-the-badge)
 
 ---
 
@@ -134,19 +133,19 @@ movie-reservation-system/
 
 # 🛠 Tech Stack
 
-| Technology | Purpose |
-|------------|---------|
-| Node.js | Runtime |
-| Express.js | Backend Framework |
-| MongoDB | Database |
-| Mongoose | ODM |
-| JWT | Authentication |
-| bcrypt | Password Hashing |
-| Joi | Validation |
-| Helmet | Security |
-| Express Rate Limit | API Protection |
-| Cookie Parser | Cookie Handling |
-| Socket.io | Real-time Support |
+| Technology         | Purpose           |
+| ------------------ | ----------------- |
+| Node.js            | Runtime           |
+| Express.js         | Backend Framework |
+| MongoDB            | Database          |
+| Mongoose           | ODM               |
+| JWT                | Authentication    |
+| bcrypt             | Password Hashing  |
+| Joi                | Validation        |
+| Helmet             | Security          |
+| Express Rate Limit | API Protection    |
+| Cookie Parser      | Cookie Handling   |
+| Socket.io          | Real-time Support |
 
 ---
 
@@ -285,28 +284,28 @@ npm run coverage
 
 ## Admin
 
-| Method | Endpoint |
-|---------|----------|
-| POST | /admin/register |
-| POST | /admin/login |
-| POST | /admin/logout |
-| GET | /admin/movies |
-| POST | /admin/movie |
-| PATCH | /admin/movie/:id |
+| Method | Endpoint         |
+| ------ | ---------------- |
+| POST   | /admin/register  |
+| POST   | /admin/login     |
+| POST   | /admin/logout    |
+| GET    | /admin/movies    |
+| POST   | /admin/movie     |
+| PATCH  | /admin/movie/:id |
 | DELETE | /admin/movie/:id |
 
 ---
 
 ## User
 
-| Method | Endpoint |
-|---------|----------|
-| POST | /user/register |
-| POST | /user/login |
-| POST | /user/logout |
-| GET | /user/movies |
-| POST | /user/book |
-| GET | /user/bookings |
+| Method | Endpoint          |
+| ------ | ----------------- |
+| POST   | /user/register    |
+| POST   | /user/login       |
+| POST   | /user/logout      |
+| GET    | /user/movies      |
+| POST   | /user/book        |
+| GET    | /user/bookings    |
 | DELETE | /user/booking/:id |
 
 ---
