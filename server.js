@@ -5,19 +5,10 @@ const { startLockCleanupJob } = require("./src/jobs/lockCleanup.job");
 const createMysqlPool = require("./src/config/mysql");
 const { runMigrations } = require("./src/db/mysql/migrate");
 const redisClient = require("./src/config/redisio")
-
 const createApp = require("./src/app");
 const connectToMongo = require("./src/config/mongo");
 const { initializeSocket } = require("./src/socket/socket");
-
-const requiredEnvVars = [
-  "MONGO_URL",
-  "ACCESS_TOKEN_SECRET",
-  "REFRESH_TOKEN_SECRET",
-  "SALT_ROUNDS",
-  "PASSKEY",
-  "REDIS_URL"
-];
+const {requiredEnvVars} = require("./src/Constants")
 
 for (const varName of requiredEnvVars) {
   if (!process.env[varName]) {
