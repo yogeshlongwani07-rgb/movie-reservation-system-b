@@ -56,7 +56,14 @@ const getMyProfile = asyncHandler(async (req, res) => {
 
 const checkListedMovies = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
+    const cacheM = await redisClient.get(adminId);
+
+    if(cacheM){
+      return   res.status(200).json({ movies: JSON.parse(cacheM.movies) });
+    }
+
   const admin = await AdminDomain.showAdminMovies(adminId);
+  await redisClient.set(adminId,JSON.stringify(admin),"EX",10)
   res.status(200).json({ movies: admin.movies });
 });
 
