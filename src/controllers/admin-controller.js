@@ -39,7 +39,9 @@ const deleteAdmin = asyncHandler(async (req, res) => {
 const getMyProfile = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
 
-  const cacheP = await redisClient.get(adminId);
+  const cacheKey = `admin:profile:${adminId}`
+
+  const cacheP = await redisClient.get(cacheKey);
 
   if(cacheP){
     return res
@@ -51,18 +53,19 @@ const getMyProfile = asyncHandler(async (req, res) => {
   await redisClient.set(adminId,JSON.stringify(admin),"EX",10);
   res
     .status(200)
-    .json({ success: true, message: "Authenticated", user: admin });
+    .json({ success: true, message: "Authenticated", user: cacheKey });
 });
 
 const checkListedMovies = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
-    const cacheM = await redisClient.get(adminId);
+  const cacheKey = `admin:movies${adminId}`
+    const cacheM = await redisClient.get(cacheKey);
 
     if(cacheM){
-      return   res.status(200).json({ movies: JSON.parse(cacheM.movies) });
+      return   res.status(200).json({ movies: (JSON.parse(cacheM).movies) });
     }
 
-  const admin = await AdminDomain.showAdminMovies(adminId);
+  const admin = await AdminDomain.showAdminMovies(cacheKey);
   await redisClient.set(adminId,JSON.stringify(admin),"EX",10)
   res.status(200).json({ movies: admin.movies });
 });
