@@ -4,18 +4,11 @@ const mongoose = require("mongoose");
 const { startLockCleanupJob } = require("./src/jobs/lockCleanup.job");
 const createMysqlPool = require("./src/config/mysql");
 const { runMigrations } = require("./src/db/mysql/migrate");
-
+const redisClient = require("./src/config/redisio")
 const createApp = require("./src/app");
 const connectToMongo = require("./src/config/mongo");
 const { initializeSocket } = require("./src/socket/socket");
-
-const requiredEnvVars = [
-  "MONGO_URL",
-  "ACCESS_TOKEN_SECRET",
-  "REFRESH_TOKEN_SECRET",
-  "SALT_ROUNDS",
-  "PASSKEY",
-];
+const {requiredEnvVars} = require("./src/Constants")
 
 for (const varName of requiredEnvVars) {
   if (!process.env[varName]) {
@@ -35,7 +28,7 @@ async function startServer() {
   initializeSocket(server);
   cleanupJob = startLockCleanupJob();
   server.listen(port, () => {
-    console.log(`Server running on port ${port}`);
+    console.log(`✅ Server running on port ${port}`);
   });
 }
 
@@ -57,6 +50,8 @@ async function shutdownServer(signal) {
         console.log("server closed");
         await mongoose.connection.close();
         console.log("MongoDB connection closed");
+        await redisClient.quit();
+        console.log("Redis connection closed");
         process.exit(0);
       } catch (err) {
         console.error("Error during shutdown:", err);
