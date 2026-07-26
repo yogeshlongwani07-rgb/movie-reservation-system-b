@@ -23,7 +23,7 @@ function createMysqlPool() {
         }
       : undefined,
   });
-  console.log("sql-connected");
+  console.log("✅ sql-connected");
   return pool;
 }
 

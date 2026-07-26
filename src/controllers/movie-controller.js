@@ -4,6 +4,7 @@ const { emitToShow } = require("../socket/socketManager");
 const { withTransaction } = require("../utils/withTransaction");
 const asyncHandler = require("../utils/asyncHandler");
 const PaymentService = require("../services/payment-service");
+const redisClient = require("../config/redisio");
 
 const createMovie = asyncHandler(async (req, res) => {
   if (req.file) {
@@ -19,7 +20,16 @@ const getAllMovies = asyncHandler(async (req, res) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 5;
   const skip = (page - 1) * limit;
+  const cacheKey = `${page}:${limit}`;
+  const cacheMovies = await redisClient.get(cacheKey);
+
+  if (cacheMovies) {
+    return res.status(200).send(JSON.parse(cacheMovies));
+  }
+
   const movie = await MovieDomain.allMovies(limit, skip);
+  await redisClient.set(cacheKey, JSON.stringify(movie), "EX", 30);
+
   res.status(200).send(movie);
 });
 
