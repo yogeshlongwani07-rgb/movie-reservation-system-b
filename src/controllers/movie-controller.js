@@ -60,7 +60,17 @@ const movieByDate = asyncHandler(async (req, res) => {
 const checkMovieShows = asyncHandler(async (req, res) => {
   const movieId = req.params.id;
 
+  const cacheShows = await redisClient.get(movieId);
+  if (cacheShows) {
+    return res.status(200).json({
+      message: "Success",
+      success: true,
+      shows: JSON.parse(cacheShows),
+    });
+  }
   const movie = await MovieDomain.checkShows(movieId);
+  await redisClient.set(movieId, JSON.stringify(movie), "EX", 30);
+
   res.status(200).json({ message: "Success", success: true, shows: movie });
 });
 
