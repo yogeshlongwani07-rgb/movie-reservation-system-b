@@ -2,6 +2,7 @@ const AdminDomain = require("../services/admin-service");
 const asyncHandler = require("../utils/asyncHandler");
 const setAuthCookies = require("../utils/setAuthCookies");
 const { withTransaction } = require("../utils/withTransaction");
+const redisClient = require("../config/redisio")
 
 const registerAdmin = asyncHandler(async (req, res) => {
   let { name, password, email, role, passkey } = req.body;
@@ -37,7 +38,17 @@ const deleteAdmin = asyncHandler(async (req, res) => {
 });
 const getMyProfile = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
+
+  const cacheP = await redisClient.get(adminId);
+
+  if(cacheP){
+    return res
+    .status(200)
+    .json({ success: true, message: "Authenticated", user: JSON.parse(cacheP) });
+  }
+
   const admin = await AdminDomain.getProfile(adminId);
+  await redisClient.set(adminId,JSON.stringify(admin),"EX",10);
   res
     .status(200)
     .json({ success: true, message: "Authenticated", user: admin });
