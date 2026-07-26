@@ -1,8 +1,10 @@
 const Redis = require("ioredis");
-const redisClient = new Redis({
-  host: "localhost",
-  port: 6379,
-});
+// const redisClient = new Redis({
+//   host: "localhost",
+//   port: 6379,
+// });
+
+const redisClient = new Redis(process.env.REDIS_URL);
 
 redisClient.on("connect", () => {
   console.log("✅ Redis connected");

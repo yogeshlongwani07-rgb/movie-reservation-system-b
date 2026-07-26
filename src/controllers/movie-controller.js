@@ -28,7 +28,7 @@ const getAllMovies = asyncHandler(async (req, res) => {
   }
 
   const movie = await MovieDomain.allMovies(limit, skip);
-  await redisClient.set(cacheKey, JSON.stringify(movie), "EX", 30);
+  await redisClient.set(cacheKey, JSON.stringify(movie), "EX", 10);
 
   res.status(200).send(movie);
 });
@@ -69,7 +69,7 @@ const checkMovieShows = asyncHandler(async (req, res) => {
     });
   }
   const movie = await MovieDomain.checkShows(movieId);
-  await redisClient.set(movieId, JSON.stringify(movie), "EX", 30);
+  await redisClient.set(movieId, JSON.stringify(movie), "EX", 10);
 
   res.status(200).json({ message: "Success", success: true, shows: movie });
 });
