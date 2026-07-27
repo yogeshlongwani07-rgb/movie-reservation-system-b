@@ -35,15 +35,12 @@ const SEVEN_DAYS_MS = 7 * 24 * 60 * 60 * 1000;
 const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 
 const requiredEnvVars = [
-  "NODE_ENV",
-  "PORT",
   "MONGO_URL",
   "ACCESS_TOKEN_SECRET",
   "REFRESH_TOKEN_SECRET",
   "SALT_ROUNDS",
   "PASSKEY",
   "FRONTEND_URL",
-  "ALLOWED_ORIGINS",
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET",
   "GOOGLE_CALLBACK_URL",
@@ -77,5 +74,5 @@ module.exports = {
   FIFTEEN_MINUTES_MS,
   SEVEN_DAYS_MS,
   corsOptions,
-  requiredEnvVars
+  requiredEnvVars,
 };
