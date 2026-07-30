@@ -16,6 +16,7 @@ function createApp() {
   const app = express();
   app.use(limiter);
   app.use(cors(corsOptions));
+  app.use(limiter);
 
   if (process.env.NODE_ENV === "production") {
     app.use(helmet());

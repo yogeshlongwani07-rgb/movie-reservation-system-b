@@ -1,13 +1,21 @@
-const rateLimit = require("express-rate-limit");
+const redisClient = require("../config/redisio");
 
-const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 100,
-  message: {
-    success: false,
-    message:
-      "Too many requests from this IP, please try again after 15 minutes",
-  },
-});
+const limit = 5;
+const window = 60;
+
+async function limiter(req, res, next) {
+  const ip = req.ip;
+  const key = `rate:${ip}`;
+  const count = await redisClient.incr(key);
+  if (count == 1) {
+    await redisClient.expire(key, window);
+  }
+  if (count > limit) {
+    return res.status(429).json({
+      message: "Too Many Requests",
+    });
+  }
+  next();
+}
 
 module.exports = { limiter };
