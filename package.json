@@ -1,6 +1,5 @@
 {
   "dependencies": {
-    "@types/jest": "^30.0.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
@@ -28,7 +27,9 @@
     "coverage": "jest --coverage"
   },
   "devDependencies": {
+    "@types/jest": "^30.0.0",
     "jest": "^30.4.2",
+    "nodemon": "^3.1.14",
     "supertest": "^7.2.2"
   }
 }

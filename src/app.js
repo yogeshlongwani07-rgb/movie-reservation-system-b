@@ -14,13 +14,11 @@ const errorHandler = require("../src/middleware/errorHandler");
 
 function createApp() {
   const app = express();
-
+  app.use(limiter);
   app.use(cors(corsOptions));
 
   if (process.env.NODE_ENV === "production") {
     app.use(helmet());
-
-    app.use(limiter);
   }
 
   app.use(express.urlencoded({ extended: true }));
