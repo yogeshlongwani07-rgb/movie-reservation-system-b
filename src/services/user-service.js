@@ -28,7 +28,7 @@ class UserDomain {
   async userLogin(email, password) {
     const user = await UserRepository.findByEmail(email);
     if (!user) {
-      throw new AppError("User not Found", 400);
+      throw new AppError("User not Found", 401);
     }
     if (user.provider !== "local" || !user.password) {
       throw new AppError(
@@ -38,7 +38,7 @@ class UserDomain {
     }
     const validatePassword = await bcrypt.compare(password, user.password);
     if (!validatePassword) {
-      throw new AppError("Invalid Credentials", 400);
+      throw new AppError("Invalid Credentials", 403);
     }
     return issueSessionTokens(user, UserRepository);
   }

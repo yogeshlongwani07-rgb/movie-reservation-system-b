@@ -4,11 +4,11 @@ const mongoose = require("mongoose");
 const { startLockCleanupJob } = require("./src/jobs/lockCleanup.job");
 const createMysqlPool = require("./src/config/mysql");
 const { runMigrations } = require("./src/db/mysql/migrate");
-const redisClient = require("./src/config/redisio")
+const redisClient = require("./src/config/redisio");
 const createApp = require("./src/app");
 const connectToMongo = require("./src/config/mongo");
 const { initializeSocket } = require("./src/socket/socket");
-const {requiredEnvVars} = require("./src/Constants")
+const { requiredEnvVars } = require("./src/Constants");
 
 for (const varName of requiredEnvVars) {
   if (!process.env[varName]) {
@@ -68,6 +68,14 @@ if (require.main === module) {
   });
 
   process.on("SIGINT", () => shutdownServer("SIGINT"));
+
+  process.on("unhandledRejection", (reason, p) => {
+    console.error("Unhandled Rejection", reason);
+  });
+  process.on("uncaughtException", (err) => {
+    console.error("Uncaught Exception", err);
+    process.exit(1);
+  });
 }
 
 module.exports = { startServer };

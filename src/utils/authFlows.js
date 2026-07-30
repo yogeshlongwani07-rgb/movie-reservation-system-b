@@ -6,7 +6,11 @@ async function refreshAccessToken(refreshToken, repository) {
   if (!refreshToken) {
     throw new AppError("Refresh token Not Found", 400);
   }
-  const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+  try {
+    decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+  } catch (err) {
+    throw new AppError("Invalid or expired refresh token", 401);
+  }
   const account = await repository.findById(decoded._id);
   if (!account) {
     throw new AppError("User not Found", 400);
