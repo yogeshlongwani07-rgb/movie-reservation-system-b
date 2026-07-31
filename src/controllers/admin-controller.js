@@ -2,7 +2,6 @@ const AdminDomain = require("../services/admin-service");
 const asyncHandler = require("../utils/asyncHandler");
 const setAuthCookies = require("../utils/setAuthCookies");
 const { withTransaction } = require("../utils/withTransaction");
-const redisClient = require("../config/redisio");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 
 const registerAdmin = asyncHandler(async (req, res) => {
@@ -32,6 +31,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 const deleteAdmin = asyncHandler(async (req, res) => {
   let id = req.user._id;
   await withTransaction((session) => AdminDomain.deleteAdmin(id, session));
+  await getCache(`admin:profile:${id}`, `admin:movies:${id}`);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({
@@ -44,8 +44,6 @@ const getMyProfile = asyncHandler(async (req, res) => {
 
   const cacheKey = `admin:profile:${adminId}`;
   const cacheP = await getCache(cacheKey);
-
-  const cacheP = await redisClient.get(cacheKey);
 
   if (cacheP) {
     return res.status(200).json({
@@ -90,6 +88,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const logout = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
   await AdminDomain.logout(adminId);
+  await getCache(`admin:profile:${id}`, `admin:movies:${id}`);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({
