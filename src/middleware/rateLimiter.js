@@ -1,6 +1,6 @@
 const redisClient = require("../config/redisio");
 
-const limit = 5;
+const limit = 10;
 const window = 60;
 
 async function limiter(req, res, next) {
