@@ -54,7 +54,6 @@ const requiredEnvVars = [
   "MYSQL_DATABASE",
   "MYSQL_SSL_CA_PATH",
   "MYSQL_SSL",
-  "REDIS_URL",
 ];
 
 const corsOptions =

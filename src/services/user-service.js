@@ -109,6 +109,8 @@ class UserDomain {
     return {
       cancelledSeats: booking.seats.map((s) => s.seatNumber),
       refundAmount: booking.totalPrice,
+      movieId: movieID,
+      showId: booking.showId.toString(),
     };
   }
 
