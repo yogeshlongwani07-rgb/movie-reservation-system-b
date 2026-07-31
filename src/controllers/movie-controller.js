@@ -5,6 +5,7 @@ const { withTransaction } = require("../utils/withTransaction");
 const asyncHandler = require("../utils/asyncHandler");
 const PaymentService = require("../services/payment-service");
 const redisClient = require("../config/redisio");
+const { getCache, setCache, deleteCache } = require("../utils/cache");
 
 const createMovie = asyncHandler(async (req, res) => {
   if (req.file) {
@@ -20,15 +21,16 @@ const getAllMovies = asyncHandler(async (req, res) => {
   const page = Number(req.query.page) || 1;
   const limit = Number(req.query.limit) || 5;
   const skip = (page - 1) * limit;
-  const cacheKey = `${page}:${limit}`;
-  const cacheMovies = await redisClient.get(cacheKey);
+  const cacheKey = `movies:page:${page}:limit:${limit}`;
+
+  const cacheMovies = await getCache(cacheKey);
 
   if (cacheMovies) {
-    return res.status(200).send(JSON.parse(cacheMovies));
+    return res.status(200).send(cacheMovies);
   }
 
   const movie = await MovieDomain.allMovies(limit, skip);
-  await redisClient.set(cacheKey, JSON.stringify(movie), "EX", 10);
+  await setCache(cacheKey, movie);
 
   res.status(200).send(movie);
 });
@@ -53,23 +55,27 @@ const deleteMovie = asyncHandler(async (req, res) => {
 
 const movieByDate = asyncHandler(async (req, res) => {
   const { date } = req.query;
+  const cacheS = `movies:date:${date}`;
+  const cacheMovies = await getCache(cacheS);
   const shows = await MovieDomain.checkMovieByDate(date);
+  await setCache(cacheS, shows);
   res.status(200).send(shows);
 });
 
 const checkMovieShows = asyncHandler(async (req, res) => {
   const movieId = req.params.id;
+  const cacheKey = `movies:${movieId}:shows`;
 
-  const cacheShows = await redisClient.get(movieId);
+  const cacheShows = await getCache(cacheKey);
   if (cacheShows) {
     return res.status(200).json({
       message: "Success",
       success: true,
-      shows: JSON.parse(cacheShows),
+      shows: cacheShows,
     });
   }
   const movie = await MovieDomain.checkShows(movieId);
-  await redisClient.set(movieId, JSON.stringify(movie), "EX", 10);
+  await setCache(cacheKey, movie);
 
   res.status(200).json({ message: "Success", success: true, shows: movie });
 });
@@ -77,7 +83,18 @@ const checkMovieShows = asyncHandler(async (req, res) => {
 const checkMovieShow = asyncHandler(async (req, res) => {
   const movieId = req.params.id;
   const showId = req.params.showId;
+  const cacheKey = `movies:${movieId}:show${showId}`;
+
+  const checkShow = await getCache(cacheKey);
+  if (checkShow) {
+    return res.status(200).json({
+      message: "Success",
+      success: true,
+      shows: checkShow,
+    });
+  }
   const movie = await MovieDomain.checkShow(movieId, showId);
+  await setCache(cacheKey, movie);
   res.status(200).json({ message: "Success", success: true, show: movie });
 });
 
@@ -89,6 +106,10 @@ const holdSeats = asyncHandler(async (req, res) => {
     MovieDomain.holdSeat(movieId, showId, seats, req.user._id, session),
   );
   emitToShow(movieId, showId, "seat:held", { seats: ticket.bookingSeats });
+  await deleteCache(
+    `movies:${movieId}:show${showId}`,
+    `movies:${movieId}:shows`,
+  );
 
   res.status(200).json({
     message: "Seat held successfully",
@@ -105,6 +126,10 @@ const bookSeat = asyncHandler(async (req, res) => {
     MovieDomain.bookSeat(movieId, showId, seats, req.user._id, session),
   );
   emitToShow(movieId, showId, "seat:booked", { seats: ticket.bookingSeats });
+  await deleteCache(
+    `movies:${movieId}:show${showId}`,
+    `movies:${movieId}:shows`,
+  );
 
   //sql payment
   let payment = null;
