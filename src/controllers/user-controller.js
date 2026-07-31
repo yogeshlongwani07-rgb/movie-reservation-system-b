@@ -2,6 +2,7 @@ const UserDomain = require("../services/user-service");
 const asyncHandler = require("../utils/asyncHandler");
 const setAuthCookies = require("../utils/setAuthCookies");
 const { withTransaction } = require("../utils/withTransaction");
+const { getCache, setCache, deleteCache } = require("../utils/cache");
 
 const registerUser = asyncHandler(async (req, res) => {
   let { name, password, email } = req.body;
@@ -10,7 +11,9 @@ const registerUser = asyncHandler(async (req, res) => {
   const { accessToken, refreshToken } = user;
   setAuthCookies(res, accessToken, refreshToken);
 
-  res.status(201).json({ message: "Account Created successfully", success: true });
+  res
+    .status(201)
+    .json({ message: "Account Created successfully", success: true });
 });
 
 const loginUser = asyncHandler(async (req, res) => {
@@ -26,6 +29,7 @@ const loginUser = asyncHandler(async (req, res) => {
 const deleteUser = asyncHandler(async (req, res) => {
   let id = req.user._id;
   await UserDomain.userDelete(id);
+  await deleteCache(`user:booking:${userId}`, `user:profile:${userId}`);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({
@@ -36,13 +40,28 @@ const deleteUser = asyncHandler(async (req, res) => {
 
 const getMyProfile = asyncHandler(async (req, res) => {
   const userId = req.user._id;
+  const cacheKey = `user:profile:${userId}`;
+  const cacheP = await getCache(cacheKey);
+
+  if (cacheP) {
+    return res
+      .status(200)
+      .json({ success: true, message: "Authenticated", user: cacheP });
+  }
   const user = await UserDomain.getProfile(userId);
+  await setCache(cacheKey, user);
   res.status(200).json({ success: true, message: "Authenticated", user });
 });
 
 const checkMyBookings = asyncHandler(async (req, res) => {
   const userId = req.user._id;
+  const cacheKey = `user:booking:${userId}`;
+  const cacheB = await getCache(cacheKey);
+  if (cacheB) {
+    return res.status(200).json({ bookings: cacheB });
+  }
   const user = await UserDomain.showMyBookings(userId);
+  await setCache(cacheKey, user);
   res.status(200).json({ bookings: user.bookings });
 });
 
@@ -76,6 +95,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const logout = asyncHandler(async (req, res) => {
   let userId = req.user._id;
   await UserDomain.logout(userId);
+  await deleteCache(`user:booking:${userId}`, `user:profile:${userId}`);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({

@@ -2,7 +2,7 @@ const AdminDomain = require("../services/admin-service");
 const asyncHandler = require("../utils/asyncHandler");
 const setAuthCookies = require("../utils/setAuthCookies");
 const { withTransaction } = require("../utils/withTransaction");
-const redisClient = require("../config/redisio")
+const { getCache, setCache, deleteCache } = require("../utils/cache");
 
 const registerAdmin = asyncHandler(async (req, res) => {
   let { name, password, email, role, passkey } = req.body;
@@ -15,7 +15,9 @@ const registerAdmin = asyncHandler(async (req, res) => {
   );
   const { accessToken, refreshToken } = admin;
   setAuthCookies(res, accessToken, refreshToken);
-  res.status(201).json({ message: "Account Created successfully", success: true });
+  res
+    .status(201)
+    .json({ message: "Account Created successfully", success: true });
 });
 
 const loginAdmin = asyncHandler(async (req, res) => {
@@ -29,6 +31,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 const deleteAdmin = asyncHandler(async (req, res) => {
   let id = req.user._id;
   await withTransaction((session) => AdminDomain.deleteAdmin(id, session));
+  await getCache(`admin:profile:${id}`, `admin:movies:${id}`);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({
@@ -39,18 +42,19 @@ const deleteAdmin = asyncHandler(async (req, res) => {
 const getMyProfile = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
 
-  const cacheKey = `admin:profile:${adminId}`
+  const cacheKey = `admin:profile:${adminId}`;
+  const cacheP = await getCache(cacheKey);
 
-  const cacheP = await redisClient.get(cacheKey);
-
-  if(cacheP){
-    return res
-    .status(200)
-    .json({ success: true, message: "Authenticated", user: JSON.parse(cacheP) });
+  if (cacheP) {
+    return res.status(200).json({
+      success: true,
+      message: "Authenticated",
+      user: cacheP,
+    });
   }
 
   const admin = await AdminDomain.getProfile(adminId);
-  await redisClient.set(adminId,JSON.stringify(admin),"EX",10);
+  await setCache(cacheKey, admin);
   res
     .status(200)
     .json({ success: true, message: "Authenticated", user: cacheKey });
@@ -58,15 +62,15 @@ const getMyProfile = asyncHandler(async (req, res) => {
 
 const checkListedMovies = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
-  const cacheKey = `admin:movies${adminId}`
-    const cacheM = await redisClient.get(cacheKey);
+  const cacheKey = `admin:movies${adminId}`;
+  const cacheM = await getCache(cacheKey);
 
-    if(cacheM){
-      return   res.status(200).json({ movies: (JSON.parse(cacheM).movies) });
-    }
+  if (cacheM) {
+    return res.status(200).json({ movies: cacheM.movies });
+  }
 
   const admin = await AdminDomain.showAdminMovies(cacheKey);
-  await redisClient.set(adminId,JSON.stringify(admin),"EX",10)
+  await setCache(cacheKey, admin);
   res.status(200).json({ movies: admin.movies });
 });
 
@@ -84,6 +88,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const logout = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
   await AdminDomain.logout(adminId);
+  await getCache(`admin:profile:${id}`, `admin:movies:${id}`);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({
