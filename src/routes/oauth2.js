@@ -115,9 +115,6 @@ router.get("/google/callback", async (req, res) => {
     userRepository,
   );
 
-  console.log("Access:", accessToken);
-  console.log("Refresh:", refreshToken);
-
   setAuthCookies(res, accessToken, refreshToken);
   res
     .status(200)
