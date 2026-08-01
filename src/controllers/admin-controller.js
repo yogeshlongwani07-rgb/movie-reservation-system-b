@@ -62,7 +62,7 @@ const getMyProfile = asyncHandler(async (req, res) => {
 
 const checkListedMovies = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
-  const cacheKey = `admin:movies${adminId}`;
+  const cacheKey = `admin:movies:${adminId}`;
   const cacheM = await getCache(cacheKey);
 
   if (cacheM) {

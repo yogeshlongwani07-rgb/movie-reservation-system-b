@@ -57,6 +57,9 @@ const movieByDate = asyncHandler(async (req, res) => {
   const { date } = req.query;
   const cacheS = `movies:date:${date}`;
   const cacheMovies = await getCache(cacheS);
+  if (cacheMovies) {
+    return res.status(200).send(cacheMovies);
+  }
   const shows = await MovieDomain.checkMovieByDate(date);
   await setCache(cacheS, shows);
   res.status(200).send(shows);
@@ -90,7 +93,7 @@ const checkMovieShow = asyncHandler(async (req, res) => {
     return res.status(200).json({
       message: "Success",
       success: true,
-      shows: checkShow,
+      show: checkShow,
     });
   }
   const movie = await MovieDomain.checkShow(movieId, showId);

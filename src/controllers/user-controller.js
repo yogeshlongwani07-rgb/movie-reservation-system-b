@@ -61,7 +61,7 @@ const checkMyBookings = asyncHandler(async (req, res) => {
     return res.status(200).json({ bookings: cacheB });
   }
   const user = await UserDomain.showMyBookings(userId);
-  await setCache(cacheKey, user);
+  await setCache(cacheKey, user.bookings);
   res.status(200).json({ bookings: user.bookings });
 });
 
