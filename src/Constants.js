@@ -56,6 +56,9 @@ const requiredEnvVars = [
   "MYSQL_SSL",
 ];
 
+const GOOGLE_AUTH_PAGE = "https://accounts.google.com/o/oauth2/v2/auth?";
+const GOOGLE_CODE = "https://oauth2.googleapis.com/token";
+
 const corsOptions =
   process.env.NODE_ENV === "production"
     ? {
@@ -74,4 +77,6 @@ module.exports = {
   SEVEN_DAYS_MS,
   corsOptions,
   requiredEnvVars,
+  GOOGLE_CODE,
+  GOOGLE_AUTH_PAGE,
 };

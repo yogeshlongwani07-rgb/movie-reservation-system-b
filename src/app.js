@@ -2,15 +2,14 @@ const express = require("express");
 const cookieParser = require("cookie-parser");
 const helmet = require("helmet");
 const cors = require("cors");
-const passport = require("./config/passport");
 const { limiter } = require("../src/middleware/rateLimiter");
 const adminRoutes = require("./routes/admin");
 const movieListingRoutes = require("./routes/movie");
 const userRoutes = require("./routes/user");
-const authRoutes = require("./routes/auth");
 const paymentRoutes = require("./routes/payment");
 const { corsOptions } = require("./Constants");
 const errorHandler = require("../src/middleware/errorHandler");
+const Oauth2Routes = require("./routes/oauth2");
 
 function createApp() {
   const app = express();
@@ -24,13 +23,12 @@ function createApp() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(express.json());
-  app.use(passport.initialize());
 
   app.use("/api/v1/admin", adminRoutes);
   app.use("/api/v1/movie", movieListingRoutes);
   app.use("/api/v1/user", userRoutes);
-  app.use("/api/v1/auth", authRoutes);
   app.use("/api/v1/payment", paymentRoutes);
+  app.use("/api/v1/o/auth", Oauth2Routes);
 
   app.get("/", (req, res) => {
     res.status(200).json({ message: "Let Set Go" });

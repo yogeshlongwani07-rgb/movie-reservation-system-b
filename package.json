@@ -1,11 +1,13 @@
 {
   "dependencies": {
+    "axios": "^1.19.0",
     "bcrypt": "^6.0.0",
     "cloudinary": "^1.41.3",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
+    "google-auth-library": "^11.0.0",
     "helmet": "^8.2.0",
     "ioredis": "^5.11.1",
     "joi": "^18.2.3",
@@ -14,8 +16,6 @@
     "multer": "^2.2.0",
     "multer-storage-cloudinary": "^4.0.0",
     "mysql2": "^3.22.6",
-    "passport": "^0.7.0",
-    "passport-google-oauth20": "^2.0.0",
     "qrcode": "^1.5.4",
     "socket.io": "^4.8.3"
   },
