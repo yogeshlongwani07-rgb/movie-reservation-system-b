@@ -40,7 +40,6 @@ const requiredEnvVars = [
   "REFRESH_TOKEN_SECRET",
   "SALT_ROUNDS",
   "PASSKEY",
-  "FRONTEND_URL",
   "GOOGLE_CLIENT_ID",
   "GOOGLE_CLIENT_SECRET",
   "GOOGLE_CALLBACK_URL",
@@ -52,7 +51,6 @@ const requiredEnvVars = [
   "MYSQL_USER",
   "MYSQL_PASSWORD",
   "MYSQL_DATABASE",
-  "MYSQL_SSL_CA_PATH",
   "MYSQL_SSL",
 ];
 

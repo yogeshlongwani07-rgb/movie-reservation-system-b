@@ -27,8 +27,8 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
-  let id = req.user._id;
-  await UserDomain.userDelete(id);
+  const userId = req.user._id;
+  await UserDomain.userDelete(userId);
   await deleteCache(`user:booking:${userId}`, `user:profile:${userId}`);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
@@ -72,6 +72,7 @@ const cancelBooking = asyncHandler(async (req, res) => {
     UserDomain.cancelBooking(bookingId, session, userId),
   );
   const { cancelledSeats, refundAmount } = user;
+  await deleteCache(`user:booking:${userId}`);
   res.json({
     success: true,
     message: "Booking cancelled",
