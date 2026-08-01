@@ -31,7 +31,7 @@ function createApp() {
   app.use("/api/v1/o/auth", Oauth2Routes);
 
   app.get("/", (req, res) => {
-    res.status(200).json({ message: "Let Set Go" });
+    res.status(200).json({ message: "All Set" });
   });
 
   app.use((req, res) => {

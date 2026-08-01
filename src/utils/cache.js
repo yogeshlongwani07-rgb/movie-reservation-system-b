@@ -24,7 +24,7 @@ async function deleteCache(...keys) {
   const validKeys = keys.filter(Boolean);
   if (validKeys.length === 0) return;
   try {
-    await redisClient.del(validKeys);
+    await redisClient.del(...validKeys);
   } catch (err) {
     console.error("Redis cache delete failed:", err.message);
   }

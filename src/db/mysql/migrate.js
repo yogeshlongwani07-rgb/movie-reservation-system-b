@@ -15,7 +15,7 @@ async function runMigrations(pool) {
     await pool.query(statement);
   }
 
-  console.log(`mysql-migrated: ${statements.length} statement(s) applied`);
+  console.log(`✅ mysql-migrated: ${statements.length} statement(s) applied`);
 }
 
 module.exports = { runMigrations };

@@ -27,8 +27,8 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
-  let id = req.user._id;
-  await UserDomain.userDelete(id);
+  const userId = req.user._id;
+  await UserDomain.userDelete(userId);
   await deleteCache(`user:booking:${userId}`, `user:profile:${userId}`);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
@@ -61,7 +61,7 @@ const checkMyBookings = asyncHandler(async (req, res) => {
     return res.status(200).json({ bookings: cacheB });
   }
   const user = await UserDomain.showMyBookings(userId);
-  await setCache(cacheKey, user);
+  await setCache(cacheKey, user.bookings);
   res.status(200).json({ bookings: user.bookings });
 });
 
@@ -72,6 +72,7 @@ const cancelBooking = asyncHandler(async (req, res) => {
     UserDomain.cancelBooking(bookingId, session, userId),
   );
   const { cancelledSeats, refundAmount } = user;
+  await deleteCache(`user:booking:${userId}`);
   res.json({
     success: true,
     message: "Booking cancelled",

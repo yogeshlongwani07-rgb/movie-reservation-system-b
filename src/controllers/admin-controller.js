@@ -31,7 +31,7 @@ const loginAdmin = asyncHandler(async (req, res) => {
 const deleteAdmin = asyncHandler(async (req, res) => {
   let id = req.user._id;
   await withTransaction((session) => AdminDomain.deleteAdmin(id, session));
-  await getCache(`admin:profile:${id}`, `admin:movies:${id}`);
+  await deleteCache(`admin:profile:${id}`, `admin:movies:${id}`);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({
@@ -57,19 +57,19 @@ const getMyProfile = asyncHandler(async (req, res) => {
   await setCache(cacheKey, admin);
   res
     .status(200)
-    .json({ success: true, message: "Authenticated", user: cacheKey });
+    .json({ success: true, message: "Authenticated", user: admin });
 });
 
 const checkListedMovies = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
-  const cacheKey = `admin:movies${adminId}`;
+  const cacheKey = `admin:movies:${adminId}`;
   const cacheM = await getCache(cacheKey);
 
   if (cacheM) {
     return res.status(200).json({ movies: cacheM.movies });
   }
 
-  const admin = await AdminDomain.showAdminMovies(cacheKey);
+  const admin = await AdminDomain.showAdminMovies(adminId);
   await setCache(cacheKey, admin);
   res.status(200).json({ movies: admin.movies });
 });
@@ -88,7 +88,7 @@ const refreshAccessToken = asyncHandler(async (req, res) => {
 const logout = asyncHandler(async (req, res) => {
   const adminId = req.user._id;
   await AdminDomain.logout(adminId);
-  await getCache(`admin:profile:${id}`, `admin:movies:${id}`);
+  await deleteCache(`admin:profile:${adminId}`, `admin:movies:${adminId}`);
   res.clearCookie("accessToken");
   res.clearCookie("refreshToken");
   res.json({
