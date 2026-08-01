@@ -11,6 +11,7 @@ const authRoutes = require("./routes/auth");
 const paymentRoutes = require("./routes/payment");
 const { corsOptions } = require("./Constants");
 const errorHandler = require("../src/middleware/errorHandler");
+const Oauth2Routes = require("./routes/oauth2");
 
 function createApp() {
   const app = express();
@@ -31,6 +32,7 @@ function createApp() {
   app.use("/api/v1/user", userRoutes);
   app.use("/api/v1/auth", authRoutes);
   app.use("/api/v1/payment", paymentRoutes);
+  app.use("/api/v1/o/auth", Oauth2Routes);
 
   app.get("/", (req, res) => {
     res.status(200).json({ message: "Let Set Go" });
