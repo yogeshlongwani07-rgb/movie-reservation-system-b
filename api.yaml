@@ -1,59 +1,67 @@
 openapi: 3.0.3
 info:
   title: Movie Reservation System API
-  version: 1.0.0
-  description: OpenAPI specification for the Movie Reservation System backend. Authentication uses HTTP-only cookies named
-    `accessToken` and `refreshToken`.
+  version: 1.1.0
+  description:
+    OpenAPI specification for the Movie Reservation System backend. Authentication uses HTTP-only cookies named
+    `accessToken` and `refreshToken`. The API covers admin, user, movie, show, hold, booking, and Google OAuth flows.
 servers:
-- url: http://localhost:3000
-  description: Local development server
+  - url: http://localhost:3000
+    description: Local development server
+  - url: https://api.example.com
+    description: Production deployment placeholder
 tags:
-- name: Health
-- name: Auth
-- name: Admin
-- name: User
-- name: Movie
+  - name: Health
+    description: Service availability and status
+  - name: Auth
+    description: Google OAuth authentication
+  - name: Admin
+    description: Admin authentication and movie management
+  - name: User
+    description: User authentication and bookings
+  - name: Movie
+    description: Movies, shows, holds, and bookings
 security:
-- accessTokenCookie: []
+  - accessTokenCookie: []
 paths:
   /:
     get:
       tags:
-      - Health
+        - Health
       summary: Health check
       responses:
-        '200':
+        "200":
           description: Service is running
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HealthResponse'
+                $ref: "#/components/schemas/HealthResponse"
   /api/v1/auth/google:
     get:
       tags:
-      - Auth
+        - Auth
       summary: Start Google OAuth login
       responses:
-        '302':
+        "302":
           description: Redirects to Google OAuth consent screen
   /api/v1/auth/google/callback:
     get:
       tags:
-      - Auth
+        - Auth
       summary: Google OAuth callback
       responses:
-        '302':
+        "302":
           description: Redirects to frontend OAuth success page
-        '500':
+        "500":
           description: OAuth login failed
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ErrorResponse'
+                $ref: "#/components/schemas/ErrorResponse"
   /api/v1/admin/register:
     post:
       tags:
-      - Admin
+        - Admin
       summary: Register an admin account
       security: []
       requestBody:
@@ -61,7 +69,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/AdminRegisterRequest'
+              $ref: "#/components/schemas/AdminRegisterRequest"
             examples:
               default:
                 value:
@@ -71,18 +79,18 @@ paths:
                   role: admin
                   passkey: super-secret-passkey
       responses:
-        '201':
-          $ref: '#/components/responses/SuccessMessage'
-        '400':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '409':
-          $ref: '#/components/responses/Error'
+        "201":
+          $ref: "#/components/responses/SuccessMessage"
+        "400":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "409":
+          $ref: "#/components/responses/Error"
   /api/v1/admin/login:
     post:
       tags:
-      - Admin
+        - Admin
       summary: Login as admin
       security: []
       requestBody:
@@ -90,99 +98,99 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/LoginRequest'
+              $ref: "#/components/schemas/LoginRequest"
             examples:
               default:
                 value:
                   email: admin@example.com
                   password: secret123
       responses:
-        '200':
-          $ref: '#/components/responses/SuccessMessage'
-        '400':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/SuccessMessage"
+        "400":
+          $ref: "#/components/responses/Error"
   /api/v1/admin/auth-me:
     get:
       tags:
-      - Admin
+        - Admin
       summary: Get the authenticated admin profile
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       responses:
-        '200':
+        "200":
           description: Authenticated admin
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdminProfileResponse'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/AdminProfileResponse"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
   /api/v1/admin/delete:
     delete:
       tags:
-      - Admin
+        - Admin
       summary: Delete the logged-in admin and their created movies
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       responses:
-        '200':
-          $ref: '#/components/responses/SuccessMessage'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/SuccessMessage"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
   /api/v1/admin/listed-movies:
     get:
       tags:
-      - Admin
+        - Admin
       summary: Get movies created by the logged-in admin
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       responses:
-        '200':
+        "200":
           description: Admin movie list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/AdminMoviesResponse'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/AdminMoviesResponse"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
   /api/v1/admin/refresh-token:
     post:
       tags:
-      - Admin
+        - Admin
       summary: Refresh admin access token
       security:
-      - refreshTokenCookie: []
+        - refreshTokenCookie: []
       responses:
-        '200':
-          $ref: '#/components/responses/SuccessMessage'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '405':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/SuccessMessage"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "405":
+          $ref: "#/components/responses/Error"
   /api/v1/admin/logout:
     post:
       tags:
-      - Admin
+        - Admin
       summary: Logout admin
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       responses:
-        '200':
-          $ref: '#/components/responses/SuccessMessage'
-        '401':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/SuccessMessage"
+        "401":
+          $ref: "#/components/responses/Error"
   /api/v1/user/register:
     post:
       tags:
-      - User
+        - User
       summary: Register a user account
       security: []
       requestBody:
@@ -190,7 +198,7 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserRegisterRequest'
+              $ref: "#/components/schemas/UserRegisterRequest"
             examples:
               default:
                 value:
@@ -198,16 +206,16 @@ paths:
                   email: user@example.com
                   password: secret123
       responses:
-        '201':
-          $ref: '#/components/responses/SuccessMessage'
-        '409':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+        "201":
+          $ref: "#/components/responses/SuccessMessage"
+        "409":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
   /api/v1/user/login:
     post:
       tags:
-      - User
+        - User
       summary: Login as user
       security: []
       requestBody:
@@ -215,167 +223,167 @@ paths:
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/UserLoginRequest'
+              $ref: "#/components/schemas/UserLoginRequest"
             examples:
               default:
                 value:
                   email: user@example.com
                   password: secret123
       responses:
-        '200':
-          $ref: '#/components/responses/SuccessMessage'
-        '400':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/SuccessMessage"
+        "400":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
   /api/v1/user/auth-me:
     get:
       tags:
-      - User
+        - User
       summary: Get the authenticated user profile
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       responses:
-        '200':
+        "200":
           description: Authenticated user
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/UserProfileResponse'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/UserProfileResponse"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
   /api/v1/user/delete:
     delete:
       tags:
-      - User
+        - User
       summary: Delete the logged-in user account
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       responses:
-        '200':
-          $ref: '#/components/responses/SuccessMessage'
-        '401':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/SuccessMessage"
+        "401":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
   /api/v1/user/my-bookings:
     get:
       tags:
-      - User
+        - User
       summary: Get the logged-in user's bookings
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       responses:
-        '200':
+        "200":
           description: Bookings list
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BookingsResponse'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/BookingsResponse"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
   /api/v1/user/cancel-booking/{bookingId}:
     post:
       tags:
-      - User
+        - User
       summary: Cancel a booking
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       parameters:
-      - $ref: '#/components/parameters/BookingId'
+        - $ref: "#/components/parameters/BookingId"
       responses:
-        '200':
+        "200":
           description: Booking cancelled
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/CancelBookingResponse'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
-        '500':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/CancelBookingResponse"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
+        "500":
+          $ref: "#/components/responses/Error"
   /api/v1/user/refresh-token:
     post:
       tags:
-      - User
+        - User
       summary: Refresh user access token
       security:
-      - refreshTokenCookie: []
+        - refreshTokenCookie: []
       responses:
-        '200':
-          $ref: '#/components/responses/SuccessMessage'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '405':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/SuccessMessage"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "405":
+          $ref: "#/components/responses/Error"
   /api/v1/user/logout:
     post:
       tags:
-      - User
+        - User
       summary: Logout user
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       responses:
-        '200':
-          $ref: '#/components/responses/SuccessMessage'
-        '401':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/SuccessMessage"
+        "401":
+          $ref: "#/components/responses/Error"
   /api/v1/movie:
     get:
       tags:
-      - Movie
+        - Movie
       summary: Get paginated movies
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       parameters:
-      - name: page
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 1
-        required: false
-      - name: limit
-        in: query
-        schema:
-          type: integer
-          minimum: 1
-          default: 5
-        required: false
+        - name: page
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 1
+          required: false
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            minimum: 1
+            default: 5
+          required: false
       responses:
-        '200':
+        "200":
           description: Movie list
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/Movie'
-        '500':
-          $ref: '#/components/responses/Error'
+                  $ref: "#/components/schemas/Movie"
+        "500":
+          $ref: "#/components/responses/Error"
   /api/v1/movie/create:
     post:
       tags:
-      - Movie
+        - Movie
       summary: Create a movie listing
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/MovieCreateForm'
+              $ref: "#/components/schemas/MovieCreateForm"
             examples:
               default:
                 value:
@@ -389,210 +397,212 @@ paths:
                   price: 250
                   shows: '[{"showTime":"18:00","date":"2026-07-11","screen":"Screen 1","layout":{"rows":10,"columns":15}}]'
       responses:
-        '201':
-          $ref: '#/components/responses/SuccessMessage'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
+        "201":
+          $ref: "#/components/responses/SuccessMessage"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
   /api/v1/movie/update/{id}:
     put:
       tags:
-      - Movie
+        - Movie
       summary: Update a movie listing
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       parameters:
-      - $ref: '#/components/parameters/MovieId'
+        - $ref: "#/components/parameters/MovieId"
       requestBody:
         required: true
         content:
           multipart/form-data:
             schema:
-              $ref: '#/components/schemas/MovieUpdateForm'
+              $ref: "#/components/schemas/MovieUpdateForm"
       responses:
-        '200':
-          $ref: '#/components/responses/SuccessMessage'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/SuccessMessage"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
   /api/v1/movie/delete/{id}:
     delete:
       tags:
-      - Movie
+        - Movie
       summary: Delete a movie listing
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       parameters:
-      - $ref: '#/components/parameters/MovieId'
+        - $ref: "#/components/parameters/MovieId"
       responses:
-        '200':
-          $ref: '#/components/responses/SuccessMessage'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+        "200":
+          $ref: "#/components/responses/SuccessMessage"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
   /api/v1/movie/available-shows:
     get:
       tags:
-      - Movie
+        - Movie
       summary: Get available shows for a date
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       parameters:
-      - name: date
-        in: query
-        required: true
-        schema:
-          type: string
-          example: '2026-07-11'
+        - name: date
+          in: query
+          required: true
+          schema:
+            type: string
+            example: "2026-07-11"
       responses:
-        '200':
+        "200":
           description: Shows available on the selected date
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/AvailableShow'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
+                  $ref: "#/components/schemas/AvailableShow"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
   /api/v1/movie/shows/{id}:
     get:
       tags:
-      - Movie
+        - Movie
       summary: Get all shows for a movie
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       parameters:
-      - $ref: '#/components/parameters/MovieId'
+        - $ref: "#/components/parameters/MovieId"
       responses:
-        '200':
+        "200":
           description: Movie shows
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ShowsResponse'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/ShowsResponse"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
   /api/v1/movie/{id}/show/{showId}:
     get:
       tags:
-      - Movie
+        - Movie
       summary: Get a specific show with seats
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       parameters:
-      - $ref: '#/components/parameters/MovieId'
-      - $ref: '#/components/parameters/ShowId'
+        - $ref: "#/components/parameters/MovieId"
+        - $ref: "#/components/parameters/ShowId"
       responses:
-        '200':
+        "200":
           description: Single show details
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ShowResponse'
-        '401':
-          $ref: '#/components/responses/Error'
-        '403':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/ShowResponse"
+        "401":
+          $ref: "#/components/responses/Error"
+        "403":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
   /api/v1/movie/{id}/show/{showId}/hold:
     post:
       tags:
-      - Movie
+        - Movie
       summary: Hold seats for a show
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       parameters:
-      - $ref: '#/components/parameters/MovieId'
-      - $ref: '#/components/parameters/ShowId'
+        - $ref: "#/components/parameters/MovieId"
+        - $ref: "#/components/parameters/ShowId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SeatSelectionRequest'
+              $ref: "#/components/schemas/SeatSelectionRequest"
             examples:
               default:
                 value:
                   seatNumber:
-                  - A1
-                  - A2
+                    - A1
+                    - A2
       responses:
-        '200':
+        "200":
           description: Seats held successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/HoldSeatResponse'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/HoldSeatResponse"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
   /api/v1/movie/{id}/show/{showId}/book:
     post:
       tags:
-      - Movie
+        - Movie
       summary: Book seats for a show
       security:
-      - accessTokenCookie: []
+        - accessTokenCookie: []
       parameters:
-      - $ref: '#/components/parameters/MovieId'
-      - $ref: '#/components/parameters/ShowId'
+        - $ref: "#/components/parameters/MovieId"
+        - $ref: "#/components/parameters/ShowId"
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/SeatSelectionRequest'
+              $ref: "#/components/schemas/SeatSelectionRequest"
             examples:
               default:
                 value:
                   seatNumber:
-                  - A1
-                  - A2
+                    - A1
+                    - A2
       responses:
-        '200':
+        "200":
           description: Seats booked successfully
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/BookSeatResponse'
-        '400':
-          $ref: '#/components/responses/Error'
-        '401':
-          $ref: '#/components/responses/Error'
-        '404':
-          $ref: '#/components/responses/Error'
+                $ref: "#/components/schemas/BookSeatResponse"
+        "400":
+          $ref: "#/components/responses/Error"
+        "401":
+          $ref: "#/components/responses/Error"
+        "404":
+          $ref: "#/components/responses/Error"
 components:
   securitySchemes:
     accessTokenCookie:
       type: apiKey
       in: cookie
       name: accessToken
+      description: Access token stored in the `accessToken` HTTP-only cookie.
     refreshTokenCookie:
       type: apiKey
       in: cookie
       name: refreshToken
+      description: Refresh token stored in the `refreshToken` HTTP-only cookie.
   parameters:
     MovieId:
       name: id
@@ -624,13 +634,13 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/SuccessMessage'
+            $ref: "#/components/schemas/SuccessMessage"
     Error:
       description: Error response
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/ErrorResponse'
+            $ref: "#/components/schemas/ErrorResponse"
   schemas:
     HealthResponse:
       type: object
@@ -639,7 +649,7 @@ components:
           type: string
           example: All Set
       required:
-      - message
+        - message
       additionalProperties: false
     SuccessMessage:
       type: object
@@ -651,8 +661,8 @@ components:
           type: string
           example: Account Created
       required:
-      - success
-      - message
+        - success
+        - message
       additionalProperties: true
     ErrorResponse:
       type: object
@@ -664,8 +674,8 @@ components:
           type: string
           example: Unexpected Error
       required:
-      - success
-      - message
+        - success
+        - message
       additionalProperties: true
     LoginRequest:
       type: object
@@ -676,8 +686,8 @@ components:
         password:
           type: string
       required:
-      - email
-      - password
+        - email
+        - password
     AdminRegisterRequest:
       type: object
       properties:
@@ -691,15 +701,15 @@ components:
         role:
           type: string
           enum:
-          - admin
+            - admin
         passkey:
           type: string
       required:
-      - name
-      - email
-      - password
-      - role
-      - passkey
+        - name
+        - email
+        - password
+        - role
+        - passkey
     UserRegisterRequest:
       type: object
       properties:
@@ -711,9 +721,9 @@ components:
         password:
           type: string
       required:
-      - name
-      - email
-      - password
+        - name
+        - email
+        - password
     UserLoginRequest:
       type: object
       properties:
@@ -726,8 +736,8 @@ components:
           type: string
           description: Optional role field used by the login controller
       required:
-      - email
-      - password
+        - email
+        - password
     UserProfileResponse:
       type: object
       properties:
@@ -736,11 +746,11 @@ components:
         message:
           type: string
         user:
-          $ref: '#/components/schemas/User'
+          $ref: "#/components/schemas/User"
       required:
-      - success
-      - message
-      - user
+        - success
+        - message
+        - user
     AdminProfileResponse:
       type: object
       properties:
@@ -749,20 +759,20 @@ components:
         message:
           type: string
         user:
-          $ref: '#/components/schemas/Admin'
+          $ref: "#/components/schemas/Admin"
       required:
-      - success
-      - message
-      - user
+        - success
+        - message
+        - user
     BookingsResponse:
       type: object
       properties:
         bookings:
           type: array
           items:
-            $ref: '#/components/schemas/Booking'
+            $ref: "#/components/schemas/Booking"
       required:
-      - bookings
+        - bookings
     CancelBookingResponse:
       type: object
       properties:
@@ -777,19 +787,19 @@ components:
         refundAmount:
           type: number
       required:
-      - success
-      - message
-      - cancelledSeats
-      - refundAmount
+        - success
+        - message
+        - cancelledSeats
+        - refundAmount
     AdminMoviesResponse:
       type: object
       properties:
         movies:
           type: array
           items:
-            $ref: '#/components/schemas/Movie'
+            $ref: "#/components/schemas/Movie"
       required:
-      - movies
+        - movies
     ShowsResponse:
       type: object
       properties:
@@ -802,11 +812,11 @@ components:
         shows:
           type: array
           items:
-            $ref: '#/components/schemas/Show'
+            $ref: "#/components/schemas/Show"
       required:
-      - message
-      - success
-      - shows
+        - message
+        - success
+        - shows
     ShowResponse:
       type: object
       properties:
@@ -817,11 +827,11 @@ components:
           type: boolean
           example: true
         show:
-          $ref: '#/components/schemas/Show'
+          $ref: "#/components/schemas/Show"
       required:
-      - message
-      - success
-      - show
+        - message
+        - success
+        - show
     HoldSeatResponse:
       type: object
       properties:
@@ -834,9 +844,9 @@ components:
         seats:
           type: object
       required:
-      - message
-      - success
-      - seats
+        - message
+        - success
+        - seats
     BookSeatResponse:
       type: object
       properties:
@@ -865,17 +875,17 @@ components:
             qr:
               type: string
       required:
-      - message
-      - success
-      - booking
+        - message
+        - success
+        - booking
     MovieCreateForm:
       type: object
       required:
-      - title
-      - description
-      - duration
-      - price
-      - shows
+        - title
+        - description
+        - duration
+        - price
+        - shows
       properties:
         title:
           type: string
@@ -930,7 +940,7 @@ components:
           items:
             type: string
       required:
-      - seatNumber
+        - seatNumber
     AvailableShow:
       type: object
       properties:
@@ -945,13 +955,13 @@ components:
         rating:
           type: number
         shows:
-          $ref: '#/components/schemas/Show'
+          $ref: "#/components/schemas/Show"
       required:
-      - title
-      - duration
-      - price
-      - rating
-      - shows
+        - title
+        - duration
+        - price
+        - rating
+        - shows
     Movie:
       type: object
       properties:
@@ -967,8 +977,8 @@ components:
           type: number
         trailer:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
         poster:
           type: string
         rating:
@@ -980,7 +990,7 @@ components:
         shows:
           type: array
           items:
-            $ref: '#/components/schemas/Show'
+            $ref: "#/components/schemas/Show"
         createdAt:
           type: string
           format: date-time
@@ -994,10 +1004,10 @@ components:
           type: string
         showTime:
           type: string
-          example: '18:00'
+          example: "18:00"
         date:
           type: string
-          example: '2026-07-11'
+          example: "2026-07-11"
         totalSeats:
           type: integer
         screen:
@@ -1012,7 +1022,7 @@ components:
         seats:
           type: array
           items:
-            $ref: '#/components/schemas/Seat'
+            $ref: "#/components/schemas/Seat"
         availableSeats:
           type: integer
         occupiedSeats:
@@ -1038,12 +1048,12 @@ components:
           type: number
         lockedBy:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
         lockedExpires:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           format: date-time
     User:
       type: object
@@ -1060,14 +1070,14 @@ components:
           type: string
         providerId:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
         role:
           type: string
         bookings:
           type: array
           items:
-            $ref: '#/components/schemas/Booking'
+            $ref: "#/components/schemas/Booking"
         createdAt:
           type: string
           format: date-time
@@ -1088,7 +1098,7 @@ components:
         movies:
           type: array
           items:
-            $ref: '#/components/schemas/Movie'
+            $ref: "#/components/schemas/Movie"
         createdAt:
           type: string
           format: date-time
@@ -1105,16 +1115,16 @@ components:
         seats:
           type: array
           items:
-            $ref: '#/components/schemas/BookingSeat'
+            $ref: "#/components/schemas/BookingSeat"
         showId:
           type: string
         status:
           type: string
           enum:
-          - Confirmed
-          - Cancelled
-          - Hold
-          - Expired
+            - Confirmed
+            - Cancelled
+            - Hold
+            - Expired
         totalPrice:
           type: number
         bookedAt:
@@ -1122,17 +1132,17 @@ components:
           format: date-time
         tickettoken:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
         cancelledAt:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           format: date-time
         holdExpiresAt:
           type:
-          - string
-          - 'null'
+            - string
+            - "null"
           format: date-time
     BookingSeat:
       type: object
