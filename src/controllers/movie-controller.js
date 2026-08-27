@@ -4,7 +4,6 @@ const { emitToShow } = require("../socket/socketManager");
 const { withTransaction } = require("../utils/withTransaction");
 const asyncHandler = require("../utils/asyncHandler");
 const PaymentService = require("../services/payment-service");
-const redisClient = require("../config/redisio");
 const { getCache, setCache, deleteCache } = require("../utils/cache");
 
 const createMovie = asyncHandler(async (req, res) => {
