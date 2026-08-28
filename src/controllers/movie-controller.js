@@ -25,13 +25,21 @@ const getAllMovies = asyncHandler(async (req, res) => {
   const cacheMovies = await getCache(cacheKey);
 
   if (cacheMovies) {
-    return res.status(200).send(cacheMovies);
+    return res.status(200).json({
+      success: true,
+      message: "Movies fetched",
+      movies: cacheMovies,
+    });
   }
 
   const movie = await MovieDomain.allMovies(limit, skip);
   await setCache(cacheKey, movie);
 
-  res.status(200).send(movie);
+  res.status(200).json({
+    success: true,
+    message: "Movies fetched",
+    movies: movie,
+  });
 });
 
 const updateMovie = asyncHandler(async (req, res) => {
@@ -57,11 +65,19 @@ const movieByDate = asyncHandler(async (req, res) => {
   const cacheS = `movies:date:${date}`;
   const cacheMovies = await getCache(cacheS);
   if (cacheMovies) {
-    return res.status(200).send(cacheMovies);
+    return res.status(200).json({
+      success: true,
+      message: "Movies fetched",
+      movies: cacheMovies,
+    });
   }
   const shows = await MovieDomain.checkMovieByDate(date);
   await setCache(cacheS, shows);
-  res.status(200).send(shows);
+  res.status(200).json({
+    success: true,
+    message: "Movies fetched",
+    movies: shows,
+  });
 });
 
 const checkMovieShows = asyncHandler(async (req, res) => {
@@ -71,8 +87,8 @@ const checkMovieShows = asyncHandler(async (req, res) => {
   const cacheShows = await getCache(cacheKey);
   if (cacheShows) {
     return res.status(200).json({
-      message: "Success",
       success: true,
+      message: "Success",
       shows: cacheShows,
     });
   }

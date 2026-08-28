@@ -51,7 +51,6 @@ const requiredEnvVars = [
   "MYSQL_USER",
   "MYSQL_PASSWORD",
   "MYSQL_DATABASE",
-  "MYSQL_SSL",
 ];
 
 const GOOGLE_AUTH_PAGE = "https://accounts.google.com/o/oauth2/v2/auth?";
