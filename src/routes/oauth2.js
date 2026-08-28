@@ -10,8 +10,9 @@ const setAuthCookies = require("../utils/setAuthCookies");
 const { issueSessionTokens } = require("../utils/issueSessionTokens");
 const asyncHandler = require("../utils/asyncHandler");
 const AppError = require("../utils/appError");
+const { limiter } = require("../middleware/rateLimiter");
 
-router.get("/google", (req, res) => {
+router.get("/google", limiter, (req, res) => {
   const state = crypto.randomBytes(32).toString("hex");
 
   const isProd = process.env.NODE_ENV === "production";
@@ -35,7 +36,7 @@ router.get("/google", (req, res) => {
   res.redirect(url);
 });
 
-router.get("/google/callback", asyncHandler(async (req, res) => {
+router.get("/google/callback", limiter, asyncHandler(async (req, res) => {
   const { code, state } = req.query;
 
   if (!code || !state) {
