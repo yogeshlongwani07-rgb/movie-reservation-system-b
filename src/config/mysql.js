@@ -6,8 +6,6 @@ let pool;
 async function createMysqlPool() {
   if (pool) return pool;
 
-  const sslEnabled = process.env.MYSQL_SSL === "true";
-
   pool = mysql.createPool({
     host: process.env.MYSQL_HOST,
     port: Number(process.env.MYSQL_PORT || 3306),
@@ -17,11 +15,6 @@ async function createMysqlPool() {
     waitForConnections: true,
     connectionLimit: 10,
     queueLimit: 0,
-    ssl: sslEnabled
-      ? {
-          ca: fs.readFileSync(process.env.MYSQL_SSL_CA_PATH, "utf8"),
-        }
-      : undefined,
   });
   return pool;
 }
