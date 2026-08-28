@@ -66,12 +66,20 @@ const checkListedMovies = asyncHandler(async (req, res) => {
   const cacheM = await getCache(cacheKey);
 
   if (cacheM) {
-    return res.status(200).json({ movies: cacheM.movies });
+    return res.status(200).json({
+      success: true,
+      message: "Movies fetched",
+      movies: cacheM.movies,
+    });
   }
 
   const admin = await AdminDomain.showAdminMovies(adminId);
   await setCache(cacheKey, admin);
-  res.status(200).json({ movies: admin.movies });
+  res.status(200).json({
+    success: true,
+    message: "Movies fetched",
+    movies: admin.movies,
+  });
 });
 
 const refreshAccessToken = asyncHandler(async (req, res) => {

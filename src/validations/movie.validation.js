@@ -1,13 +1,16 @@
 const Joi = require("joi");
+const objectIdRegex = /^[a-fA-F0-9]{24}$/;
+const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+const timeRegex = /^([01]\d|2[0-3]):([0-5]\d)$/;
+const seatNumberRegex = /^[A-Z]+[1-9]\d*$/;
+
 const showSchema = Joi.object({
-  showTime: Joi.string().required(),
-  date: Joi.string().required(), // later change to date()
+  showTime: Joi.string().pattern(timeRegex).required(),
+  date: Joi.string().pattern(dateRegex).required(),
   layout: Joi.object({
     rows: Joi.number().integer().min(1).required(),
     columns: Joi.number().integer().min(1).required(),
   }).required(),
-  totalSeats: Joi.number().integer().min(0).required(),
-  availableSeats: Joi.number().integer().min(0).required(),
   screen: Joi.string().optional(),
 });
 
@@ -20,7 +23,7 @@ const createMovieSchema = Joi.object({
   trailer: Joi.string().optional(),
   rating: Joi.number().min(0).max(10).optional(),
   price: Joi.number().positive().required(),
-  shows: Joi.array().items(showSchema).optional(),
+  shows: Joi.array().items(showSchema).min(1).required(),
 });
 
 const updateMovieSchema = Joi.object({
@@ -34,7 +37,7 @@ const updateMovieSchema = Joi.object({
 }).min(1);
 
 const seatNumbersSchema = Joi.array()
-  .items(Joi.string().trim().required())
+  .items(Joi.string().trim().uppercase().pattern(seatNumberRegex).required())
   .unique()
   .min(1)
   .required();
@@ -43,16 +46,21 @@ const holdOrBookSeatsSchema = Joi.object({
   seatNumber: seatNumbersSchema,
 });
 const movieIdParamsSchema = Joi.object({
-  id: Joi.string().hex().length(24).required(),
+  id: Joi.string().pattern(objectIdRegex).required(),
 });
 
 const movieIdWithShowIdParamsSchema = Joi.object({
-  id: Joi.string().hex().length(24).required(),
-  showId: Joi.string().hex().length(24).required(),
+  id: Joi.string().pattern(objectIdRegex).required(),
+  showId: Joi.string().pattern(objectIdRegex).required(),
 });
 
 const dateQuerySchema = Joi.object({
-  date: Joi.string().required(),
+  date: Joi.string().pattern(dateRegex).required(),
+});
+
+const movieListQuerySchema = Joi.object({
+  page: Joi.number().integer().min(1).default(1),
+  limit: Joi.number().integer().min(1).max(50).default(5),
 });
 
 module.exports = {
@@ -60,6 +68,7 @@ module.exports = {
   updateMovieSchema,
   movieIdParamsSchema,
   dateQuerySchema,
+  movieListQuerySchema,
   holdOrBookSeatsSchema,
   movieIdWithShowIdParamsSchema,
 };

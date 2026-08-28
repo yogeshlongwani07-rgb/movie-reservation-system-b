@@ -7,6 +7,10 @@ function createMysqlPool() {
   if (pool) return pool;
 
   const sslEnabled = process.env.MYSQL_SSL === "true";
+  const sslCaPath = process.env.MYSQL_SSL_CA_PATH;
+  if (sslEnabled && !sslCaPath) {
+    throw new Error("MYSQL_SSL_CA_PATH is required when MYSQL_SSL=true");
+  }
 
   pool = mysql.createPool({
     host: process.env.MYSQL_HOST,

@@ -8,6 +8,8 @@ const userRepository = require("../repositories/user.repository");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 const setAuthCookies = require("../utils/setAuthCookies");
 const { issueSessionTokens } = require("../utils/issueSessionTokens");
+const asyncHandler = require("../utils/asyncHandler");
+const AppError = require("../utils/appError");
 
 router.get("/google", (req, res) => {
   const state = crypto.randomBytes(32).toString("hex");
@@ -33,7 +35,7 @@ router.get("/google", (req, res) => {
   res.redirect(url);
 });
 
-router.get("/google/callback", async (req, res) => {
+router.get("/google/callback", asyncHandler(async (req, res) => {
   const { code, state } = req.query;
 
   if (!code || !state) {
@@ -53,21 +55,26 @@ router.get("/google/callback", async (req, res) => {
   }
   res.clearCookie("oauth_state");
 
-  const tokenResponse = await axios.post(
-    GOOGLE_CODE,
-    new URLSearchParams({
-      code,
-      client_id: process.env.GOOGLE_CLIENT_ID,
-      client_secret: process.env.GOOGLE_CLIENT_SECRET,
-      redirect_uri: process.env.GOOGLE_CALLBACK_URL,
-      grant_type: "authorization_code",
-    }),
-    {
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
+  let tokenResponse;
+  try {
+    tokenResponse = await axios.post(
+      GOOGLE_CODE,
+      new URLSearchParams({
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: process.env.GOOGLE_CALLBACK_URL,
+        grant_type: "authorization_code",
+      }),
+      {
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
       },
-    },
-  );
+    );
+  } catch (error) {
+    throw new AppError("Failed to exchange Google authorization code", 502);
+  }
   const { id_token } = tokenResponse.data;
 
   if (!id_token) {
@@ -119,6 +126,6 @@ router.get("/google/callback", async (req, res) => {
   res
     .status(200)
     .json({ message: "Login with Google Successfully", success: true });
-});
+}));
 
 module.exports = router;

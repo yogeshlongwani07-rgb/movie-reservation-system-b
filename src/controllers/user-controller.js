@@ -58,11 +58,19 @@ const checkMyBookings = asyncHandler(async (req, res) => {
   const cacheKey = `user:booking:${userId}`;
   const cacheB = await getCache(cacheKey);
   if (cacheB) {
-    return res.status(200).json({ bookings: cacheB });
+    return res.status(200).json({
+      success: true,
+      message: "Bookings fetched",
+      bookings: cacheB,
+    });
   }
   const user = await UserDomain.showMyBookings(userId);
   await setCache(cacheKey, user.bookings);
-  res.status(200).json({ bookings: user.bookings });
+  res.status(200).json({
+    success: true,
+    message: "Bookings fetched",
+    bookings: user.bookings,
+  });
 });
 
 const cancelBooking = asyncHandler(async (req, res) => {

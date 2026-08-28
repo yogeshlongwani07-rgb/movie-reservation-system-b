@@ -11,8 +11,18 @@ async function runMigrations(pool) {
     .map((statement) => statement.trim())
     .filter(Boolean);
 
-  for (const statement of statements) {
-    await pool.query(statement);
+  const connection = await pool.getConnection();
+  try {
+    await connection.beginTransaction();
+    for (const statement of statements) {
+      await connection.query(statement);
+    }
+    await connection.commit();
+  } catch (err) {
+    await connection.rollback();
+    throw err;
+  } finally {
+    connection.release();
   }
 
   console.log(`✅ mysql-migrated: ${statements.length} statement(s) applied`);

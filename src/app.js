@@ -10,6 +10,7 @@ const paymentRoutes = require("./routes/payment");
 const { corsOptions } = require("./Constants");
 const errorHandler = require("../src/middleware/errorHandler");
 const Oauth2Routes = require("./routes/oauth2");
+const csrfGuard = require("./middleware/csrf");
 
 function createApp() {
   const app = express();
@@ -23,11 +24,13 @@ function createApp() {
   app.use(express.urlencoded({ extended: true }));
   app.use(cookieParser());
   app.use(express.json());
+  app.use(csrfGuard);
 
   app.use("/api/v1/admin", adminRoutes);
   app.use("/api/v1/movie", movieListingRoutes);
   app.use("/api/v1/user", userRoutes);
   app.use("/api/v1/payment", paymentRoutes);
+  app.use("/api/v1/auth", Oauth2Routes);
   app.use("/api/v1/o/auth", Oauth2Routes);
 
   app.get("/", (req, res) => {

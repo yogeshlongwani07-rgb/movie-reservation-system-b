@@ -13,7 +13,7 @@ function isLoggedIn(req, res, next) {
     req.user = decode;
     next();
   } catch (err) {
-    console.log("error", err);
+    console.error("Auth verification failed", err.message);
     res.status(401).json({
       message: "Authentication is required to access this resource.",
       success: false,

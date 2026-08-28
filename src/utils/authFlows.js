@@ -6,8 +6,9 @@ async function refreshAccessToken(refreshToken, repository) {
   if (!refreshToken) {
     throw new AppError("Refresh token Not Found", 400);
   }
+  let decoded;
   try {
-    const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+    decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
   } catch (err) {
     throw new AppError("Invalid or expired refresh token", 401);
   }

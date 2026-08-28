@@ -46,6 +46,7 @@ const requiredEnvVars = [
   "CLOUD_NAME",
   "CLOUD_API_KEY",
   "CLOUD_API_SECRET",
+  "REDIS_URL",
   "MYSQL_HOST",
   "MYSQL_PORT",
   "MYSQL_USER",

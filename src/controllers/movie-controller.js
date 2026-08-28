@@ -18,21 +18,29 @@ const createMovie = asyncHandler(async (req, res) => {
 });
 
 const getAllMovies = asyncHandler(async (req, res) => {
-  const page = Number(req.query.page) || 1;
-  const limit = Number(req.query.limit) || 5;
+  const page = req.query.page;
+  const limit = req.query.limit;
   const skip = (page - 1) * limit;
   const cacheKey = `movies:page:${page}:limit:${limit}`;
 
   const cacheMovies = await getCache(cacheKey);
 
   if (cacheMovies) {
-    return res.status(200).send(cacheMovies);
+    return res.status(200).json({
+      success: true,
+      message: "Movies fetched",
+      movies: cacheMovies,
+    });
   }
 
-  const movie = await MovieDomain.allMovies(limit, skip);
-  await setCache(cacheKey, movie);
+  const movies = await MovieDomain.allMovies(limit, skip);
+  await setCache(cacheKey, movies);
 
-  res.status(200).send(movie);
+  res.status(200).json({
+    success: true,
+    message: "Movies fetched",
+    movies,
+  });
 });
 
 const updateMovie = asyncHandler(async (req, res) => {
@@ -58,11 +66,19 @@ const movieByDate = asyncHandler(async (req, res) => {
   const cacheS = `movies:date:${date}`;
   const cacheMovies = await getCache(cacheS);
   if (cacheMovies) {
-    return res.status(200).send(cacheMovies);
+    return res.status(200).json({
+      success: true,
+      message: "Shows fetched",
+      shows: cacheMovies,
+    });
   }
   const shows = await MovieDomain.checkMovieByDate(date);
   await setCache(cacheS, shows);
-  res.status(200).send(shows);
+  res.status(200).json({
+    success: true,
+    message: "Shows fetched",
+    shows,
+  });
 });
 
 const checkMovieShows = asyncHandler(async (req, res) => {

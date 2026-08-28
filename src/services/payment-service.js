@@ -36,12 +36,19 @@ class PaymentService {
     return payment;
   }
 
-  async getPaymentByBookingId(bookingId) {
+  async getPaymentByBookingId(bookingId, requesterUserId) {
     const payment = await PaymentRepository.findByBookingId(
       bookingId.toString(),
     );
     if (!payment) {
       throw new AppError("Payment not found for this booking", 404);
+    }
+    if (
+      requesterUserId &&
+      payment.user_id &&
+      payment.user_id.toString() !== requesterUserId.toString()
+    ) {
+      throw new AppError("You are not authorized to view this payment", 403);
     }
     return payment;
   }

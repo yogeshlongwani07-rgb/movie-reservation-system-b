@@ -8,6 +8,7 @@ const {
   updateMovieSchema,
   movieIdParamsSchema,
   dateQuerySchema,
+  movieListQuerySchema,
   holdOrBookSeatsSchema,
   movieIdWithShowIdParamsSchema,
 } = require("../validations/movie.validation");
@@ -25,7 +26,7 @@ const {
 } = require("../controllers/movie-controller");
 
 //Movies CRUD
-router.get("/", getAllMovies);
+router.get("/", validate(movieListQuerySchema, "query"), getAllMovies);
 router.post(
   "/create",
   isLoggedIn,

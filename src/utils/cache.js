@@ -16,7 +16,7 @@ async function setCache(key, value, ttlSeconds = DEFAULT_TTL_SECONDS) {
   try {
     await redisClient.set(key, JSON.stringify(value), "EX", ttlSeconds);
   } catch (err) {
-    console.error("Redis cache read failed:", err.message);
+    console.error("Redis cache write failed:", err.message);
   }
 }
 

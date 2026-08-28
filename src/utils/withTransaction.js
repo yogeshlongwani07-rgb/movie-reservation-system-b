@@ -50,7 +50,7 @@ async function safeAbort(session) {
   try {
     await session.abortTransaction();
   } catch (err) {
-    console.log("error", err);
+    console.error("Transaction abort failed", err.message);
   }
 }
 

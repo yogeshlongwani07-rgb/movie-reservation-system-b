@@ -15,6 +15,20 @@ function errorHandler(err, req, res, next) {
     });
   }
 
+  if (err.name === "MulterError") {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
+  if (err.message === "Only image uploads are allowed") {
+    return res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+  }
+
   console.error("Unhandled error:", {
     message: err.message,
     stack: err.stack,

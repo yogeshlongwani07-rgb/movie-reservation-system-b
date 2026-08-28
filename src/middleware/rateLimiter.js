@@ -13,6 +13,7 @@ async function limiter(req, res, next) {
     }
     if (count > limit) {
       return res.status(429).json({
+        success: false,
         message: "Too Many Requests",
       });
     }

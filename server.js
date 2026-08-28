@@ -17,9 +17,13 @@ for (const varName of requiredEnvVars) {
 }
 let server;
 let cleanupJob;
+let mysqlPool;
 async function startServer() {
   await connectToMongo();
-  const mysqlPool = await createMysqlPool();
+  mysqlPool = await createMysqlPool();
+  if (process.env.MYSQL_SSL === "true" && !process.env.MYSQL_SSL_CA_PATH) {
+    throw new Error("MYSQL_SSL_CA_PATH not found while MYSQL_SSL=true");
+  }
   await runMigrations(mysqlPool);
 
   const app = createApp();
@@ -50,6 +54,10 @@ async function shutdownServer(signal) {
         console.log("server closed");
         await mongoose.connection.close();
         console.log("MongoDB connection closed");
+        if (mysqlPool) {
+          await mysqlPool.end();
+          console.log("MySQL pool closed");
+        }
         await redisClient.quit();
         console.log("Redis connection closed");
         process.exit(0);
