@@ -2,7 +2,7 @@ require("dotenv").config();
 const http = require("http");
 const mongoose = require("mongoose");
 const { startLockCleanupJob } = require("./src/jobs/lockCleanup.job");
-const createMysqlPool = require("./src/config/mysql");
+const { createMysqlPool, closeMysqlPool } = require("./src/config/mysql");
 const { runMigrations } = require("./src/db/mysql/migrate");
 const redisClient = require("./src/config/redisio");
 const createApp = require("./src/app");
@@ -47,7 +47,8 @@ async function shutdownServer(signal) {
       try {
         clearTimeout(forceShutdownTimeout);
 
-        console.log("server closed");
+        console.log("Server closed");
+        await closeMysqlPool();
         await mongoose.connection.close();
         console.log("MongoDB connection closed");
         await redisClient.quit();
@@ -68,6 +69,7 @@ if (require.main === module) {
   });
 
   process.on("SIGINT", () => shutdownServer("SIGINT"));
+  process.on("SIGTERM", () => shutdownServer("SIGTERM"));
 
   process.on("unhandledRejection", (reason, p) => {
     console.error("Unhandled Rejection", reason);

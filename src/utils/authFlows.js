@@ -8,18 +8,19 @@ async function refreshAccessToken(refreshToken, repository) {
   }
   try {
     const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+
+    const account = await repository.findById(decoded._id);
+    if (!account) {
+      throw new AppError("User not Found", 400);
+    }
+    if (account.refreshToken !== refreshToken) {
+      throw new AppError("Invalid refresh token", 401);
+    }
+    const accessToken = generateAccessToken(account);
+    return accessToken;
   } catch (err) {
     throw new AppError("Invalid or expired refresh token", 401);
   }
-  const account = await repository.findById(decoded._id);
-  if (!account) {
-    throw new AppError("User not Found", 400);
-  }
-  if (account.refreshToken !== refreshToken) {
-    throw new AppError("Invalid refresh token", 401);
-  }
-  const accessToken = generateAccessToken(account);
-  return accessToken;
 }
 
 async function logout(id, repository) {

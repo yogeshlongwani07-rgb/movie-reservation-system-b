@@ -3,7 +3,7 @@ const fs = require("fs");
 
 let pool;
 
-function createMysqlPool() {
+async function createMysqlPool() {
   if (pool) return pool;
 
   const sslEnabled = process.env.MYSQL_SSL === "true";
@@ -23,8 +23,15 @@ function createMysqlPool() {
         }
       : undefined,
   });
-  console.log("✅ sql-connected");
   return pool;
 }
 
-module.exports = createMysqlPool;
+async function closeMysqlPool() {
+  if (!pool) return;
+
+  await pool.end();
+  pool = undefined;
+  console.log("MySQL pool closed");
+}
+
+module.exports = { createMysqlPool, closeMysqlPool };

@@ -14,7 +14,7 @@ async function runMigrations(pool) {
   for (const statement of statements) {
     await pool.query(statement);
   }
-
+  console.log("✅ sql-connected");
   console.log(`✅ mysql-migrated: ${statements.length} statement(s) applied`);
 }
 
